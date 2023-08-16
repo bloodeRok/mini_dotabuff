@@ -1,6 +1,11 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "")
@@ -56,6 +61,37 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "server.wsgi.application"
 
+REST_FRAMEWORK = {
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny'
+    ],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Mini Dota Buff",
+    "DESCRIPTION": "Mini dota buff backend",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_SETTINGS": {
+        "displayOperationId": True,
+    },
+    "COMPONENT_SPLIT_PATCH": False,
+    "TAGS": [
+        {
+            "name": "create",
+            "description": "Endpoints which create new objects."
+        },
+        {
+            "name": "games",
+            "description": "Endpoints with *tokens* base."
+        },
+    ],
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
