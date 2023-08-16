@@ -6,7 +6,8 @@ from core.constants.field_restrictions import NAME_MAX_LENGTH
 class User(models.Model):
     name = models.CharField(
         help_text="Name of the user.",
-        max_length=NAME_MAX_LENGTH
+        max_length=NAME_MAX_LENGTH,
+        unique=True
     )
 
     #  Relationships.

@@ -88,7 +88,11 @@ SPECTACULAR_SETTINGS = {
         },
         {
             "name": "games",
-            "description": "Endpoints with *tokens* base."
+            "description": "Endpoints with *games* base."
+        },
+        {
+            "name": "users",
+            "description": "Endpoints with *users* base."
         },
     ],
 }
