@@ -30,29 +30,47 @@ class UserSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_win_rate(user: User) -> Optional[str]:
         all_stats = user.game_stats.all()
-        wr = all_stats.filter(win=True).count() / all_stats.count()
-        return str(round(wr, 3) * 100) + " %" if wr else None
+        try:
+            wr = all_stats.filter(win=True).count() / all_stats.count()
+            return str(round(wr * 100, 1)) + " %"
+        except ZeroDivisionError:
+            return None
 
     @staticmethod
     def get_favorite_hero(user: User) -> Optional[str]:
-        return user.game_stats. \
-            values("hero").annotate(total=Count('id')). \
-            order_by("-total").first()["hero"]
+        if user.game_stats.count() > 0:
+            return user.game_stats. \
+                values("hero").annotate(total=Count('id')). \
+                order_by("-total").first()["hero"]
+        return None
 
     @staticmethod
     def get_avg_gpm(user: User) -> Optional[int]:
-        return int(user.game_stats.aggregate(avg=Avg("gpm"))["avg"])
+        if user.game_stats.count() > 0:
+            return int(user.game_stats.aggregate(avg=Avg("gpm"))["avg"])
+        return None
 
     @staticmethod
     def get_avg_xpm(user: User) -> Optional[int]:
-        return int(user.game_stats.aggregate(avg=Avg("xpm"))["avg"])
+        if user.game_stats.count() > 0:
+            return int(user.game_stats.aggregate(avg=Avg("xpm"))["avg"])
+        return None
 
     @staticmethod
     def get_avg_kda(user: User) -> Optional[int]:
         kills = user.game_stats.aggregate(sum=Avg("kills"))["sum"]
         deaths = user.game_stats.aggregate(sum=Avg("deaths"))["sum"]
         assists = user.game_stats.aggregate(sum=Avg("assists"))["sum"]
-        return round((kills + assists) / deaths, 1)
+        result = []
+        if kills:
+            result.append(kills)
+        if assists:
+            result.append(assists)
+        if deaths:
+            return round(sum(result) / deaths, 1)
+        if len(result) == 0:
+            return None
+        return sum(result)
 
     class Meta:
         model = User
