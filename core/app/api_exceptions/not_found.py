@@ -13,3 +13,7 @@ class PlayerNotFound(NotFound):
 
 class UserNotFound(NotFound):
     default_detail = "User with this name was not found."
+
+
+class GameNotFound(NotFound):
+    default_detail = "Game with this game_id was not found in db."

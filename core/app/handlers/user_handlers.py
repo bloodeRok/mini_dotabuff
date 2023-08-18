@@ -10,7 +10,7 @@ from core.app.handlers.schema_extensions.api_responses import (
     APIResponse,
 )
 from core.app.serializers.requests import UserCreateRequest, GameBindRequest
-from core.app.serializers.responses.user_serializer import UserSerializer
+from core.app.serializers.responses import UserSerializer
 from core.app.services import UserService
 
 
@@ -91,7 +91,7 @@ def user_games(
 
 
 @extend_schema_view(
-    post=extend_schema(
+    get=extend_schema(
         tags=["users", "retrieve users"],
         operation_id="Retrieve User",
         description="Retrieves requested user.",

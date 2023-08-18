@@ -1,5 +1,7 @@
-from core.models import User, Game
-from datetime import datetime, time
+from datetime import datetime
+
+from core.app.api_exceptions import GameNotFound
+from core.models import Game
 
 
 class GameRepository:
@@ -24,3 +26,15 @@ class GameRepository:
             game_date=game_date,
             game_duration=game_duration
         )
+
+    def find_by_game_id(self, game_id: int) -> Game:
+        """
+        Finds game via its game_id.
+
+        :raises GameNotFound: when game not found.
+        """
+
+        game = self.model.objects.filter(game_id=game_id).first()
+        if not game:
+            raise GameNotFound
+        return game
