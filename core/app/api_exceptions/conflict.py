@@ -9,3 +9,7 @@ class Conflict(APIException):
 
 class UserConflict(Conflict):
     default_detail = "User with this name already exists."
+
+
+class PlayerGameConflict(Conflict):
+    default_detail = "User already registered in this game."

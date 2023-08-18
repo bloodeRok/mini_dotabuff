@@ -4,10 +4,13 @@ from django.db import models
 from core.constants.field_restrictions import NAME_MAX_LENGTH
 
 
-class UsersGames(models.Model):
+class PlayerStats(models.Model):
     nickname = models.CharField(
         help_text="Nickname of the player in this game.",
         max_length=NAME_MAX_LENGTH
+    )
+    win = models.BooleanField(
+        help_text="Is player won the game."
     )
     hero = models.CharField(
         help_text="The hero the player played on.",
@@ -79,3 +82,7 @@ class UsersGames(models.Model):
         on_delete=models.PROTECT,
         related_name="players"
     )
+
+    class Meta:
+        unique_together = ("game", "player")
+
