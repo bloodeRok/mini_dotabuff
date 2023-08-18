@@ -1,1 +1,1 @@
-from .user_requests import UserCreateRequest
+from .user_requests import UserCreateRequest, GameBindRequest

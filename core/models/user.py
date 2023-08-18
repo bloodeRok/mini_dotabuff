@@ -13,7 +13,7 @@ class User(models.Model):
     #  Relationships.
     games = models.ManyToManyField(
         "Game",
-        through="UsersGames"
+        through="PlayerStats"
     )
 
     def __repr__(self):
