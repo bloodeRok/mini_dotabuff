@@ -4,8 +4,11 @@ from drf_spectacular.utils import OpenApiResponse, OpenApiExample
 from rest_framework.serializers import ModelSerializer
 
 from core.app.handlers.schema_extensions import api_examples
-from core.app.serializers.responses import APIErrorSerializer
-from core.app.serializers.responses.user_serializer import UserSerializer
+from core.app.serializers.responses import (
+    APIErrorSerializer,
+    GameSerializer,
+    UserSerializer,
+)
 
 
 class APIResponse:
@@ -65,3 +68,11 @@ class UserResponse(APIResponse):
     entity_name = "user"
     title_entity_name = "Users"
     plural_entity_name = "users"
+
+
+class GameResponse(APIResponse):
+    serializer = GameSerializer
+    entity_name = "game"
+    title_entity_name = "Games"
+    plural_entity_name = "games"
+

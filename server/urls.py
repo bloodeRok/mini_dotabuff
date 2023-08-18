@@ -11,5 +11,6 @@ urlpatterns = [
         name="swagger-ui",
     ),
     path("users/", include("core.urls.user_urls")),
+    path("games/", include("core.urls.game_urls")),
 
 ]

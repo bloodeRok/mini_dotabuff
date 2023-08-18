@@ -33,6 +33,11 @@ UserNotFound = build_example(
     name="User not found",
     exception=api_exceptions.UserNotFound
 )
+GameNotFound = build_example(
+    name="Game not found",
+    exception=api_exceptions.GameNotFound
+)
+
 
 # ------------ 406 ------------
 
