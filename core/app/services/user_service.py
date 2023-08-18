@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Count, Avg
 
 from core.app.repositories import UserRepository, GameRepository
 from core.app.repositories.player_stats_repository import PlayerStatsRepository
@@ -17,6 +18,15 @@ class UserService:
         """
 
         return self.repository.create(name=name)
+
+    def find_by_name(self, name: str) -> User:
+        """
+        Finds user via its name.
+
+        :raises UserNotFound: when user not found.
+        """
+
+        return self.repository.find_by_name(name=name)
 
     def bind_game(
             self,

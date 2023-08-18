@@ -5,6 +5,7 @@ from rest_framework.serializers import ModelSerializer
 
 from core.app.handlers.schema_extensions import api_examples
 from core.app.serializers.responses import APIErrorSerializer
+from core.app.serializers.responses.user_serializer import UserSerializer
 
 
 class APIResponse:
@@ -12,6 +13,12 @@ class APIResponse:
     entity_name: str
     title_entity_name: str
     plural_entity_name: str
+
+    def single(self) -> OpenApiResponse:
+        return OpenApiResponse(
+            response=self.serializer,
+            description=f"Requested {self.entity_name} data."
+        )
 
     def created(self) -> OpenApiResponse:
         return OpenApiResponse(
@@ -54,7 +61,7 @@ class APIResponse:
 
 
 class UserResponse(APIResponse):
-    # serializer = UserSerializer
+    serializer = UserSerializer
     entity_name = "user"
     title_entity_name = "Users"
     plural_entity_name = "users"
