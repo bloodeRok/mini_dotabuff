@@ -1,5 +1,4 @@
 .env
-.bot_constants.py
 .DS_Store
 .idea
 __pycache__
