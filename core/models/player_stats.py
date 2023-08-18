@@ -75,14 +75,33 @@ class PlayerStats(models.Model):
     game = models.ForeignKey(
         "Game",
         on_delete=models.PROTECT,
-        related_name="games"
+        related_name="players_stats"
     )
     player = models.ForeignKey(
         "User",
         on_delete=models.PROTECT,
-        related_name="players"
+        related_name="game_stats"
     )
 
     class Meta:
         unique_together = ("game", "player")
 
+    def __repr__(self):
+        return f"<Game(" \
+               f"pk={self.pk}, " \
+               f"nickname={self.nickname}, " \
+               f"win={self.win}, " \
+               f"hero={self.hero}, " \
+               f"kills={self.kills}, " \
+               f"deaths={self.deaths}, " \
+               f"assists={self.assists}, " \
+               f"networth={self.networth}, " \
+               f"last_hits={self.last_hits}, " \
+               f"denies={self.denies}, " \
+               f"gpm={self.gpm}, " \
+               f"xpm={self.xpm}, " \
+               f"damage={self.damage} " \
+               f")>"
+
+    def __str__(self):
+        return self.__repr__()
