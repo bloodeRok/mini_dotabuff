@@ -7,7 +7,7 @@ from core.app.handlers.schema_extensions import api_examples
 from core.app.serializers.responses import (
     APIErrorSerializer,
     GameSerializer,
-    UserSerializer,
+    UserSerializer, TelegramProfileSerializer,
 )
 
 
@@ -66,13 +66,19 @@ class APIResponse:
 class UserResponse(APIResponse):
     serializer = UserSerializer
     entity_name = "user"
-    title_entity_name = "Users"
+    title_entity_name = "User"
     plural_entity_name = "users"
 
 
 class GameResponse(APIResponse):
     serializer = GameSerializer
     entity_name = "game"
-    title_entity_name = "Games"
+    title_entity_name = "Game"
     plural_entity_name = "games"
 
+
+class TelegramProfileResponse(APIResponse):
+    serializer = TelegramProfileSerializer
+    entity_name = "telegram profile"
+    title_entity_name = "Telegram profile"
+    plural_entity_name = "telegram profiles"

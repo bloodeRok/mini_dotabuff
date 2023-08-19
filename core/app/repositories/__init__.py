@@ -1,2 +1,3 @@
 from .user_repository import UserRepository
 from .game_repository import GameRepository
+from .telegram_profile_repository import TelegramProfileRepository

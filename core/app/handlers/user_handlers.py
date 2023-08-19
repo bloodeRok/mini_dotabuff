@@ -13,37 +13,6 @@ from core.app.serializers.requests import UserCreateRequest, GameBindRequest
 from core.app.serializers.responses import UserSerializer
 from core.app.services import UserService
 
-
-@extend_schema_view(
-    post=extend_schema(
-        tags=["users", "create"],
-        operation_id="Create User",
-        description="Creates User with supplied parameters.",
-        request=UserCreateRequest,
-        responses={
-            201: UserResponse().created(),
-            409: UserResponse().conflict(
-                examples=[
-                    api_examples.UserConflict
-                ]
-            ),
-        }
-    )
-)
-@api_view(["POST"])
-def users(
-        request: Request
-) -> HttpResponse:
-    data = UserCreateRequest(data=request.data)
-    data.is_valid(raise_exception=True)
-    data = data.validated_data
-
-    UserService().create(
-        name=data["name"]
-    )
-    return HttpResponse("Success", status=status.HTTP_201_CREATED)
-
-
 @extend_schema_view(
     post=extend_schema(
         tags=["users"],

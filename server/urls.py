@@ -12,5 +12,5 @@ urlpatterns = [
     ),
     path("users/", include("core.urls.user_urls")),
     path("games/", include("core.urls.game_urls")),
-
+    path("telegram-profiles/", include("core.urls.telegram_profile_urls")),
 ]

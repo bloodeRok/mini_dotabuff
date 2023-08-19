@@ -8,17 +8,15 @@ from core.models import User, Game
 class UserRepository:
     model = User
 
-    def create(self, name: str) -> User:
+    def get_or_create(self, name: str) -> User:
         """
-        Creates user with passed name.
-
-        :raises UserConflict: when user already exists.
+        Creates user with passed chat ID or creates one.
         """
 
-        try:
-            return self.model.objects.create(name=name)
-        except IntegrityError:
-            raise UserConflict
+        user = self.model.objects.filter(name=name).first()
+        if not user:
+            user = self.model.objects.create(name=name)
+        return user
 
     def find_by_name(self, name: str) -> User:
         """

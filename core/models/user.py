@@ -17,7 +17,7 @@ class User(models.Model):
     )
 
     def __repr__(self):
-        return f"<Game(" \
+        return f"<User(" \
                f"pk={self.pk}, " \
                f"name={self.name} " \
                f")>"

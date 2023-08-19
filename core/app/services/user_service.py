@@ -1,5 +1,4 @@
 from django.db import transaction
-from django.db.models import Count, Avg
 
 from core.app.repositories import UserRepository, GameRepository
 from core.app.repositories.player_stats_repository import PlayerStatsRepository

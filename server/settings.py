@@ -45,8 +45,6 @@ ROOT_URLCONF = "server.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates']
-        ,
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -93,6 +91,10 @@ SPECTACULAR_SETTINGS = {
         {
             "name": "users",
             "description": "Endpoints with *Users* base."
+        },
+        {
+            "name": "telegram profiles",
+            "description": "Endpoints with *TelegramProfiles* base."
         },
         {
             "name": "retrieve users",

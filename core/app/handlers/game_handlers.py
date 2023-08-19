@@ -8,7 +8,7 @@ from core.app.handlers.schema_extensions.api_responses import (
     GameResponse,
 )
 from core.app.serializers.responses import GameSerializer
-from core.app.services.game_service import GameService
+from core.app.services import GameService
 
 
 @extend_schema_view(
