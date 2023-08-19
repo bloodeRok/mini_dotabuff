@@ -30,6 +30,12 @@ class APIResponse:
             examples=[api_examples.Success]
         )
 
+    def updated(self) -> OpenApiResponse:
+        return OpenApiResponse(
+            response=None,
+            description=f"{self.title_entity_name} successfully updated."
+        )
+
     def not_found(
             self,
             examples: List[OpenApiExample] = None

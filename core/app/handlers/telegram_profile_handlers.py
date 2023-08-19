@@ -19,7 +19,7 @@ from core.app.services import TelegramProfileService
                     "* Creates user if it was not found by nickname.",
         request=TelegramProfileCreateRequest,
         responses={
-            201: TelegramProfileResponse().created()
+            204: TelegramProfileResponse().updated()
         }
     )
 )
@@ -35,4 +35,4 @@ def tgprofiles(
         chat_id=data["chat_id"],
         nickname=data["nickname"]
     )
-    return HttpResponse("Success", status=status.HTTP_201_CREATED)
+    return HttpResponse(status=status.HTTP_204_NO_CONTENT)
