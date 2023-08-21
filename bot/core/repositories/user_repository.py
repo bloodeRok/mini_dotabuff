@@ -6,9 +6,9 @@ from bot.constants.urls import GET_USER_URL, BIND_USER_URL
 class UserRepository:
 
     @staticmethod
-    async def get_user(name: str):
+    async def get_stats(chat_id: int):
         async with aiohttp.ClientSession() as session:
-            async with session.get(GET_USER_URL.format(name=name)) as response:
+            async with session.get(GET_USER_URL.format(chat_id=chat_id)) as response:
                 return await response.json()
 
     @staticmethod

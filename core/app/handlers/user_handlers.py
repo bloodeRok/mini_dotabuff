@@ -59,25 +59,4 @@ def user_games(
     return HttpResponse("Success", status=status.HTTP_201_CREATED)
 
 
-@extend_schema_view(
-    get=extend_schema(
-        tags=["users", "retrieve users"],
-        operation_id="Retrieve User",
-        description="Retrieves requested user.",
-        responses={
-            200: UserResponse().single(),
-            404: UserResponse().not_found(
-                examples=[
-                    api_examples.UserNotFound
-                ]
-            )
-        }
-    )
-)
-@api_view(["GET"])
-def users_user(
-        request: Request,
-        name: str
-) -> HttpResponse:
-    user = UserService().find_by_name(name=name)
-    return JsonResponse(UserSerializer(user).data)
+

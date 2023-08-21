@@ -1,3 +1,4 @@
+from core.app.api_exceptions.not_found import TelegramProfileNotFound
 from core.models import User, TelegramProfile
 
 
@@ -15,3 +16,15 @@ class TelegramProfileRepository:
             return
         tg_profile.user = user
         tg_profile.save()
+
+    def find_by_chat_id(self, chat_id: int) -> TelegramProfile:
+        """
+        Finds telegram profile via its chat ID.
+
+        :raises TelegramProfileNotFound: when telegram profile not found.
+        """
+
+        tg_profile = self.model.objects.filter(chat_id=chat_id).first()
+        if not tg_profile:
+            raise TelegramProfileNotFound
+        return tg_profile

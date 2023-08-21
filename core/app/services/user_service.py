@@ -1,31 +1,27 @@
 from django.db import transaction
 
-from core.app.repositories import UserRepository, GameRepository
+from core.app.repositories import UserRepository, GameRepository, \
+    TelegramProfileRepository
 from core.app.repositories.player_stats_repository import PlayerStatsRepository
 from core.app.services.helpers.dotabuff_connection import GameData
-from core.models import User
+from core.models import User, TelegramProfile
 
 
 class UserService:
     repository = UserRepository()
 
-    def create(self, name: str) -> User:
+    def find_by_chat_id(self, chat_id: int) -> User:
         """
-        Creates user with passed name.
-
-        :raises UserConflict: when user already exists.
-        """
-
-        return self.repository.create(name=name)
-
-    def find_by_name(self, name: str) -> User:
-        """
-        Finds user via its name.
+        Finds user via its telegram profile.
 
         :raises UserNotFound: when user not found.
         """
 
-        return self.repository.find_by_name(name=name)
+        tgprofile = TelegramProfileRepository().find_by_chat_id(
+            chat_id=chat_id
+        )
+
+        return self.repository.find_by_tgprofile(tgprofile=tgprofile)
 
     def bind_game(
             self,

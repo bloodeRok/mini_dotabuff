@@ -17,3 +17,7 @@ class UserNotFound(NotFound):
 
 class GameNotFound(NotFound):
     default_detail = "Game with this game_id was not found in db."
+
+
+class TelegramProfileNotFound(NotFound):
+    default_detail = "Telegram profile with this chat_id was not found."

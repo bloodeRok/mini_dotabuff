@@ -12,3 +12,12 @@ class TelegramProfileService:
 
         user = UserRepository().get_or_create(name=nickname)
         self.repository.bind_user(chat_id=chat_id, user=user)
+
+    def find_by_chat_id(self, chat_id: int) -> TelegramProfile:
+        """
+        Finds telegram profile via its chat ID.
+
+        :raises TelegramProfileNotFound: when telegram profile not found.
+        """
+
+        return self.repository.find_by_chat_id(chat_id=chat_id)

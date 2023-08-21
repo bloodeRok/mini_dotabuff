@@ -5,7 +5,8 @@ from aiogram import F
 from aiogram.filters import Command
 
 from bot.constants.bot_constants import API_KEY
-from bot.core.scenarios import welcome_scenario, bind_scenario
+from bot.core.scenarios import welcome_scenario, bind_scenario, \
+    get_stats_scenario
 from bot.core.handlers import basic
 from bot.core.utils.states import WelcomeStates
 
@@ -33,6 +34,12 @@ async def start():
     dp.message.register(
         bind_scenario.bind_chat_to_nickname,
         WelcomeStates.nickname
+    )
+
+    # Get stats
+    dp.message.register(
+        get_stats_scenario.get_stats,
+        Command("get_stats")
     )
 
     try:

@@ -16,6 +16,10 @@ async def set_commands(bot: Bot):
             command="bind",
             description="Привязать чат к нику в доте"
         ),
+        BotCommand(
+            command="get_stats",
+            description="Получить статистику"
+        ),
 
     ]
 
