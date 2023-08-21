@@ -8,6 +8,7 @@ class NotFound(APIException):
 
 
 class PlayerNotFound(NotFound):
+
     default_detail = "Player with that nickname was not found in this game."
 
 

@@ -6,9 +6,9 @@ from aiogram.filters import Command
 
 from bot.constants.bot_constants import API_KEY
 from bot.core.scenarios import welcome_scenario, bind_scenario, \
-    get_stats_scenario
+    get_stats_scenario, add_game_scenario
 from bot.core.handlers import basic
-from bot.core.utils.states import WelcomeStates
+from bot.core.utils.states import BindUserStates, AddGameStates
 
 
 async def start():
@@ -33,13 +33,23 @@ async def start():
     ),
     dp.message.register(
         bind_scenario.bind_chat_to_nickname,
-        WelcomeStates.nickname
+        BindUserStates.nickname
     )
 
     # Get stats
     dp.message.register(
         get_stats_scenario.get_stats,
         Command("get_stats")
+    )
+
+    # Add game scenario
+    dp.message.register(
+        add_game_scenario.start_add_game,
+        Command("add_game")
+    ),
+    dp.message.register(
+        add_game_scenario.add_game_to_user,
+        AddGameStates.game_id
     )
 
     try:

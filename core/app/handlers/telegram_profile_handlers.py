@@ -6,9 +6,10 @@ from rest_framework.request import Request
 
 from core.app.handlers.schema_extensions import api_examples
 from core.app.handlers.schema_extensions.api_responses import (
-    TelegramProfileResponse, UserResponse,
+    TelegramProfileResponse, UserResponse, APIResponse,
 )
-from core.app.serializers.requests import TelegramProfileCreateRequest
+from core.app.serializers.requests import TelegramProfileCreateRequest, \
+    GameBindRequest
 from core.app.serializers.responses import UserSerializer
 from core.app.services import TelegramProfileService, UserService
 
@@ -39,6 +40,7 @@ def tgprofiles(
     )
     return HttpResponse(status=status.HTTP_204_NO_CONTENT)
 
+
 @extend_schema_view(
     get=extend_schema(
         tags=["users", "retrieve users", "telegram profiles"],
@@ -61,3 +63,48 @@ def tgprofiles_users_user(
 ) -> HttpResponse:
     user = UserService().find_by_chat_id(chat_id=chat_id)
     return JsonResponse(UserSerializer(user).data)
+
+
+@extend_schema_view(
+    post=extend_schema(
+        tags=["telegram profiles", "games"],
+        operation_id="Bind Game",
+        description="Binds game to user supplied parameters.\n"
+                    "* Wrote player stats from game in db.\n"
+                    "* Auto-creates game if it does not exist.\n",
+        request=GameBindRequest,
+        responses={
+            201: TelegramProfileResponse().created(),
+            404: TelegramProfileResponse().not_found(
+                examples=[
+                    api_examples.TelegramProfileNotFound,
+                    api_examples.PlayerNotFound
+                ]
+            ),
+            406: APIResponse.invalid_parameters(
+                examples=[
+                    api_examples.InvalidGameId
+                ]
+            ),
+            409: TelegramProfileResponse().conflict(
+                examples=[
+                    api_examples.PlayerGameConflict
+                ]
+            ),
+        }
+    )
+)
+@api_view(["POST"])
+def tgprofile_games(
+        request: Request,
+        chat_id: int
+) -> HttpResponse:
+    data = GameBindRequest(data=request.data)
+    data.is_valid(raise_exception=True)
+    data = data.validated_data
+
+    TelegramProfileService().bind_game(
+        game_id=data["game_id"],
+        chat_id=chat_id
+    )
+    return HttpResponse("Success", status=status.HTTP_201_CREATED)

@@ -5,5 +5,4 @@ from bot.constants.sticker_constants import TWO_MONKEYS
 
 
 async def send_welcome(message: Message):
-    await message.answer_sticker(TWO_MONKEYS)
     await message.answer(WELCOME_MESSAGE)

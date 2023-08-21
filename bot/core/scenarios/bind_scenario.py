@@ -4,13 +4,13 @@ from aiogram.types import Message
 from bot.constants.messages import START_BIND_MESSAGE
 from bot.constants.sticker_constants import TWO_MONKEYS
 from bot.core.repositories import UserRepository
-from bot.core.utils.states import WelcomeStates
+from bot.core.utils.states import BindUserStates
 
 
 async def start_bind(message: Message, state: FSMContext):
     await message.answer_sticker(TWO_MONKEYS)
     await message.answer(START_BIND_MESSAGE)
-    await state.set_state(WelcomeStates.nickname)
+    await state.set_state(BindUserStates.nickname)
 
 
 async def bind_chat_to_nickname(message: Message, state: FSMContext):

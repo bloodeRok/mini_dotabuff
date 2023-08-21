@@ -4,7 +4,7 @@ from aiogram.types import Message
 from bot.constants.messages import START_BIND_MESSAGE
 from bot.constants.sticker_constants import TWO_MONKEYS
 from bot.core.repositories import UserRepository
-from bot.core.utils.states import WelcomeStates
+from bot.core.utils.states import BindUserStates
 
 
 async def get_stats(message: Message):

@@ -1,5 +1,5 @@
 from aiogram.fsm.state import StatesGroup, State
 
 
-class WelcomeStates(StatesGroup):
+class BindUserStates(StatesGroup):
     nickname = State()

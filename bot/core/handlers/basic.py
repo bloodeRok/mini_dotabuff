@@ -7,7 +7,7 @@ from bot.core.utils.commands import set_commands
 async def get_photo(message: Message, bot: Bot):
     await message.answer(
         "Ну фоточка. Ну здорово. "
-        "Ты умеешь отправлять фотографии. Молодец (долбаёб)."
+        "Ты умеешь отправлять фотографии. Молодец."
     )
 
 

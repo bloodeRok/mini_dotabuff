@@ -19,3 +19,14 @@ class TelegramProfileCreateRequest(serializers.ModelSerializer):
             "chat_id",
             "nickname"
         ]
+
+
+class GameBindRequest(serializers.Serializer):
+    game_id = serializers.IntegerField(
+        help_text="ID of the game played."
+    )
+
+    class Meta:
+        fields = [
+            "game_id",
+        ]
