@@ -6,7 +6,7 @@ from bot.core.keyboards import not_found_add_game_kb
 from bot.core.repositories import UserRepository
 from bot.core.utils.states import AddGameStates
 
-@dp
+
 async def start_add_game(message: Message, state: FSMContext):
     await message.answer(START_ADD_GAME_MESSAGE)
     await state.set_state(AddGameStates.game_id)
