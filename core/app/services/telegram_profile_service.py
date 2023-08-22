@@ -10,8 +10,6 @@ from core.models import TelegramProfile
 class TelegramProfileService:
     repository = TelegramProfileRepository()
 
-
-
     def get_or_create(self, chat_id: int, nickname: str) -> None:
         """
         Creates telegram profile with passed chat ID.

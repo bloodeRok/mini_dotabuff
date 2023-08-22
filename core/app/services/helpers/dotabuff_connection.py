@@ -73,7 +73,7 @@ class GameData:
                         find("td", class_="tf-pl single-lines").find("a").text
                 if nickname == nick_in_game:
                     return player, list(self.data.keys())[list(self.data.values()).index(team)]
-        raise PlayerNotFound
+        raise PlayerNotFound(nickname=nickname)
 
     def get_player_results(self, nickname: str) -> dict[str, Any]:
         """

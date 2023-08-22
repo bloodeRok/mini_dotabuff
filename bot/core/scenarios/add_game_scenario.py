@@ -13,17 +13,17 @@ async def start_add_game(message: Message, state: FSMContext):
 
 
 async def add_game_to_user(message: Message, state: FSMContext):
-    res_code = await UserRepository().add_game(
+    status, detail = await UserRepository().add_game(
         chat_id=message.chat.id,
         game_id=message.text
     )
-    match res_code:
+    match status:
         case 201:
             await message.answer("Игра успешно добавлена!")
 
         case 404:
             await message.answer(
-                "Твой ник не было найден в этой игре! Почему?",
+                detail + " Почему?",
                 reply_markup=not_found_add_game_kb
             )
 

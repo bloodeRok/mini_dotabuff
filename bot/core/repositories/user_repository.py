@@ -34,4 +34,4 @@ class UserRepository:
                         "game_id": game_id
                     }
             ) as response:
-                return response.status
+                return response.status, (await response.json())["detail"]

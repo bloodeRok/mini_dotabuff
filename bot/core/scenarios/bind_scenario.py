@@ -8,7 +8,6 @@ from bot.core.utils.states import BindUserStates
 
 
 async def start_bind(message: Message, state: FSMContext):
-    await message.answer_sticker(TWO_MONKEYS)
     await message.answer(START_BIND_MESSAGE)
     await state.set_state(BindUserStates.nickname)
 

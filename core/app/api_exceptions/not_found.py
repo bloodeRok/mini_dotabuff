@@ -8,8 +8,9 @@ class NotFound(APIException):
 
 
 class PlayerNotFound(NotFound):
-
-    default_detail = "Player with that nickname was not found in this game."
+    def __init__(self, nickname: str):
+        self.detail = f"Игрок с ником '{nickname}'" \
+                              f" не был найден в этой игре."
 
 
 class UserNotFound(NotFound):
