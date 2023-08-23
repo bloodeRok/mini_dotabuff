@@ -4,7 +4,7 @@ WELCOME_MESSAGE = """
 
 START_BIND_MESSAGE =  """
 Давай привяжем этот чат к игроку\n 
-Напиши с каким ником ты (или твой парень) играешь в доту?
+Напиши ниже ID dotabuff?
 """
 
 START_ADD_GAME_MESSAGE =  """

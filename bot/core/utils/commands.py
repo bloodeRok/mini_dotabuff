@@ -24,6 +24,10 @@ async def set_commands(bot: Bot):
             command="add_game",
             description="Добавить игру"
         ),
+        BotCommand(
+            command="photo",
+            description="Прислать фото"
+        ),
 
     ]
 

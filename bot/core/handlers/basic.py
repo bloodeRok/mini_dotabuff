@@ -1,5 +1,5 @@
 from aiogram import Bot
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile
 
 from bot.core.utils.commands import set_commands
 
