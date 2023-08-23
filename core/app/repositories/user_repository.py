@@ -8,14 +8,23 @@ from core.models import User, Game, TelegramProfile
 class UserRepository:
     model = User
 
-    def get_or_create(self, name: str) -> User:
+    @staticmethod
+    def __store(user: User):
+        user.save()
+        user.refresh_from_db()
+
+    def get_or_create(self, dotabuff_user_id: int, name: str) -> User:
         """
         Creates user with passed chat ID or creates one.
         """
 
-        user = self.model.objects.filter(name=name).first()
+        user = self.model.objects.filter(dotabuff_id=dotabuff_user_id).first()
         if not user:
-            user = self.model.objects.create(name=name)
+            user = self.model.objects.create(
+                dotabuff_id=dotabuff_user_id,
+                name=name
+            )
+
         return user
 
     def find_by_name(self, name: str) -> User:
@@ -40,3 +49,7 @@ class UserRepository:
         if not user:
             raise UserNotFound
         return user
+
+    def update_name(self, user: User, new_name: str) -> None:
+        user.name = new_name
+        self.__store(user=user)

@@ -4,20 +4,21 @@ from aiogram import Bot, Dispatcher
 from aiogram import F
 from aiogram.filters import Command
 
-from bot.constants.bot_constants import API_KEY
+from bot.core.constants.bot_constants import API_KEY
 from bot.core.scenarios import welcome_scenario, bind_scenario, \
     get_stats_scenario, add_game_scenario
 from bot.core.handlers import basic
 from bot.core.utils.states import BindUserStates, AddGameStates
 
+bot = Bot(token=API_KEY)
+
 
 async def start():
-    bot = Bot(token=API_KEY)
 
     dp = Dispatcher()
     dp.startup.register(basic.start_bot)
 
-    # Get random photo
+    # Basic
     dp.message.register(basic.get_photo, F.photo)
 
     # Welcome scenario
@@ -32,8 +33,12 @@ async def start():
         Command("bind")
     ),
     dp.message.register(
-        bind_scenario.bind_chat_to_nickname,
-        BindUserStates.nickname
+        bind_scenario.bind_chat_to_dotabuff_id,
+        BindUserStates.dotabuff_id
+    )
+    dp.callback_query.register(
+        bind_scenario.where_dotabuff_id,
+        F.data.startswith("where_dotabuff_player_id"),
     )
 
     # Get stats

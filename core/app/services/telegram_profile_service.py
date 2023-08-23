@@ -1,36 +1,26 @@
+from typing import Optional
+
 from django.db import transaction
 
-from core.app.repositories import UserRepository, TelegramProfileRepository, \
-    GameRepository
+from core.app.api_exceptions import UserGamesNotFound, OldLastGame
+from core.app.repositories import (
+    UserRepository,
+    TelegramProfileRepository,
+    GameRepository,
+)
 from core.app.repositories.player_stats_repository import PlayerStatsRepository
-from core.app.services.helpers.dotabuff_connection import GameData
-from core.models import TelegramProfile
+from core.app.services.helpers.dotabuff_connection import GameData, PlayerData, \
+    GamesData
+from core.models import TelegramProfile, User
 
 
 class TelegramProfileService:
     repository = TelegramProfileRepository()
 
-    def get_or_create(self, chat_id: int, nickname: str) -> None:
-        """
-        Creates telegram profile with passed chat ID.
-        """
-
-        user = UserRepository().get_or_create(name=nickname)
-        self.repository.bind_user(chat_id=chat_id, user=user)
-
-    def find_by_chat_id(self, chat_id: int) -> TelegramProfile:
-        """
-        Finds telegram profile via its chat ID.
-
-        :raises TelegramProfileNotFound: when telegram profile not found.
-        """
-
-        return self.repository.find_by_chat_id(chat_id=chat_id)
-
-    def bind_game(
-            self,
+    @staticmethod
+    def __bind_game(
             game_id: int,
-            chat_id: int
+            user: User
     ) -> None:
         """
         Binds the game to the passed user.
@@ -42,25 +32,95 @@ class TelegramProfileService:
                  was not found in game.
         :raises PlayerGameConflict: when player
                  already registered in this game.
-
         """
 
-        tgprofile = self.repository.find_by_chat_id(chat_id=chat_id)
-        user = UserRepository().find_by_tgprofile(tgprofile=tgprofile)
         game_data = GameData(game_id=game_id)
         player_results = game_data.get_player_results(
             nickname=user.name
         )
         game_date, game_duration = game_data.get_time_fields()
 
-        with transaction.atomic():
-            game = GameRepository().get_or_create(
-                game_id=game_id,
-                game_date=game_date,
-                game_duration=game_duration
-            )
-            PlayerStatsRepository().bind_game(
-                game=game,
+        game = GameRepository().get_or_create(
+            game_id=game_id,
+            game_date=game_date,
+            game_duration=game_duration
+        )
+        PlayerStatsRepository().bind_game(
+            game=game,
+            user=user,
+            player_results=player_results
+        )
+
+    def get_or_create(self, chat_id: int, dotabuff_user_id: int) -> str:
+        """
+        Creates telegram profile with passed chat ID.
+        """
+
+        user_repository = UserRepository()
+        dotabuff_nickcname = PlayerData.get_nickname(
+            dotabuff_user_id=dotabuff_user_id
+        )
+        user = user_repository.get_or_create(
+            dotabuff_user_id=dotabuff_user_id,
+            name=dotabuff_nickcname
+        )
+        if user.name != dotabuff_nickcname:
+            user_repository.update_name(
                 user=user,
-                player_results=player_results
+                new_name=dotabuff_nickcname
             )
+        self.repository.bind_user(chat_id=chat_id, user=user)
+        return dotabuff_nickcname
+
+    def find_by_chat_id(self, chat_id: int) -> TelegramProfile:
+        """
+        Finds telegram profile via its chat ID.
+
+        :raises TelegramProfileNotFound: when telegram profile not found.
+        """
+
+        return self.repository.find_by_chat_id(chat_id=chat_id)
+
+    def synchronise_games(self, chat_id: int, games_count: int):
+        """
+        TODO
+
+        :raises UserGamesNotFound: when user has no games.
+        :raises OldLastGame: when user last game was more than 50 games ago.
+        """
+
+        def get_first_registered_index(
+                last_game_id: int,
+                games_ids: list[int]
+        ) -> Optional[int]:
+            for index, game_id in enumerate(games_ids):
+                if last_game_id == game_id:
+                    return index
+            return None
+
+        tgprofile = self.repository.find_by_chat_id(chat_id=chat_id)
+        user = UserRepository().find_by_tgprofile(tgprofile=tgprofile)
+
+        last_game = user.games.last()
+        if last_game is None:
+            raise UserGamesNotFound
+
+        all_games_ids = GamesData.get_last_games_ids(
+            dotabuff_user_id=user.dotabuff_id,
+            games_count=games_count
+        )
+
+        first_registered_index = get_first_registered_index(
+            last_game_id=last_game.game_id,
+            games_ids=all_games_ids
+        )
+
+        if first_registered_index is None:
+            raise OldLastGame
+
+        with transaction.atomic():
+            for game_id in all_games_ids[:first_registered_index][::-1]:
+                self.__bind_game(
+                    game_id=game_id,
+                    user=user
+                )

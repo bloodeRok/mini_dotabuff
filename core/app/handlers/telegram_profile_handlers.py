@@ -3,6 +3,7 @@ from drf_spectacular.utils import extend_schema_view, extend_schema
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
+from rest_framework.response import Response
 
 from core.app.handlers.schema_extensions import api_examples
 from core.app.handlers.schema_extensions.api_responses import (
@@ -19,7 +20,7 @@ from core.app.services import TelegramProfileService, UserService
         tags=["telegram profiles", "create"],
         operation_id="Create Telegram Profile",
         description="Creates Telegram Profile with supplied parameters.\n"
-                    "* Creates user if it was not found by nickname.",
+                    "* Creates user if it was not found by dotabuff_id.",
         request=TelegramProfileCreateRequest,
         responses={
             204: TelegramProfileResponse().updated()
@@ -34,11 +35,14 @@ def tgprofiles(
     data.is_valid(raise_exception=True)
     data = data.validated_data
 
-    TelegramProfileService().get_or_create(
+    nickname = TelegramProfileService().get_or_create(
         chat_id=data["chat_id"],
-        nickname=data["nickname"]
+        dotabuff_user_id=data["dotabuff_user_id"]
     )
-    return HttpResponse(status=status.HTTP_204_NO_CONTENT)
+    return Response(
+        data={"nickname": nickname},
+        status=status.HTTP_201_CREATED
+    )
 
 
 @extend_schema_view(
@@ -68,8 +72,8 @@ def tgprofiles_users_user(
 @extend_schema_view(
     post=extend_schema(
         tags=["telegram profiles", "games"],
-        operation_id="Bind Game",
-        description="Binds game to user supplied parameters.\n"
+        operation_id="Synchronise Games",
+        description="Synchronises requested count of games to user.\n"
                     "* Wrote player stats from game in db.\n"
                     "* Auto-creates game if it does not exist.\n",
         request=GameBindRequest,
@@ -104,7 +108,7 @@ def tgprofile_games(
     data = data.validated_data
 
     TelegramProfileService().bind_game(
-        game_id=data["game_id"],
+        game_count=data["game_count"],
         chat_id=chat_id
     )
     return HttpResponse("Success", status=status.HTTP_201_CREATED)

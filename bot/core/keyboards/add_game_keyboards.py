@@ -1,12 +1,10 @@
 from aiogram.types import (
-    KeyboardButton,
-    ReplyKeyboardMarkup,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
 )
 
 # 404 status code
-not_found_add_game_buttons = [
+add_game__not_found__buttons = [
     [
         InlineKeyboardButton(
             text="1) Ты ошибся с ID игры.",
@@ -27,6 +25,6 @@ not_found_add_game_buttons = [
     ]
 ]
 
-not_found_add_game_kb = InlineKeyboardMarkup(
-    inline_keyboard=not_found_add_game_buttons
+add_game__not_found__kb = InlineKeyboardMarkup(
+    inline_keyboard=add_game__not_found__buttons
 )

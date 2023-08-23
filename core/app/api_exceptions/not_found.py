@@ -10,7 +10,12 @@ class NotFound(APIException):
 class PlayerNotFound(NotFound):
     def __init__(self, nickname: str):
         self.detail = f"Игрок с ником '{nickname}'" \
-                              f" не был найден в этой игре."
+                      f" не был найден в этой игре."
+
+
+class PlayerProfileNotFound(NotFound):
+    def __init__(self):
+        self.detail = "Я не нашёл профиль с таким ID."
 
 
 class UserNotFound(NotFound):
@@ -19,6 +24,10 @@ class UserNotFound(NotFound):
 
 class GameNotFound(NotFound):
     default_detail = "Game with this game_id was not found in db."
+
+
+class UserGamesNotFound(NotFound):
+    default_detail = "User has no recorded games."
 
 
 class TelegramProfileNotFound(NotFound):

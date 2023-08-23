@@ -1,8 +1,8 @@
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from bot.constants.messages import START_ADD_GAME_MESSAGE
-from bot.core.keyboards import not_found_add_game_kb
+from bot.core.constants.messages import START_ADD_GAME_MESSAGE
+from bot.core.keyboards import add_game__not_found__kb
 from bot.core.repositories import UserRepository
 from bot.core.utils.states import AddGameStates
 
@@ -24,7 +24,7 @@ async def add_game_to_user(message: Message, state: FSMContext):
         case 404:
             await message.answer(
                 detail + " Почему?",
-                reply_markup=not_found_add_game_kb
+                reply_markup=add_game__not_found__kb
             )
 
         case 409:

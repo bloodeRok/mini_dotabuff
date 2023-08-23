@@ -1,6 +1,7 @@
 import aiohttp
+from aiohttp import ContentTypeError
 
-from bot.constants.urls import GET_USER_URL, BIND_USER_URL, ADD_GAME_URL
+from bot.core.constants.urls import GET_USER_URL, BIND_USER_URL, ADD_GAME_URL
 
 
 class UserRepository:
@@ -14,16 +15,20 @@ class UserRepository:
                 return await response.json()
 
     @staticmethod
-    async def bind_user(chat_id: int, nickname: str):
+    async def bind_user(chat_id: int, dotabuff_user_id: int):
         async with aiohttp.ClientSession() as session:
             async with session.post(
                     BIND_USER_URL,
                     data={
                         "chat_id": chat_id,
-                        "nickname": nickname
+                        "dotabuff_user_id": dotabuff_user_id
                     }
             ) as response:
-                return response.status
+                try:
+                    json = await response.json()
+                except ContentTypeError:
+                    json = None
+                return response.status, json
 
     @staticmethod
     async def add_game(chat_id: int, game_id: str):
