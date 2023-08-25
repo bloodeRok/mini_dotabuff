@@ -11,7 +11,7 @@ from bot.core.keyboards import (
 )
 from bot.core.repositories import UserRepository
 from bot.core.utils.states import BindUserStates
-from ..main import bot
+from ..utils.bot_init import bot
 
 
 async def start_bind(message: Message, state: FSMContext):
@@ -24,6 +24,9 @@ async def start_bind(message: Message, state: FSMContext):
 
 async def bind_chat_to_dotabuff_id(message: Message, state: FSMContext):
     try:
+        if message.text == "/stop":
+            await state.clear()
+            return
         dotabuff_user_id = int(message.text)
     except ValueError:
         await message.reply("ID должен иметь только цифры!")

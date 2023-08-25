@@ -8,9 +8,9 @@ class NotFound(APIException):
 
 
 class PlayerNotFound(NotFound):
-    def __init__(self, nickname: str):
-        self.detail = f"Игрок с ником '{nickname}'" \
-                      f" не был найден в этой игре."
+    def __init__(self, nickname: str, user_id: int, game_id: int):
+        self.detail = f"Игрок с ником '{nickname}' (id = {user_id})" \
+                      f" не был найден в игре (id игры = {game_id})."
 
 
 class PlayerProfileNotFound(NotFound):

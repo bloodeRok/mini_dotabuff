@@ -4,13 +4,16 @@ from aiogram import Bot, Dispatcher
 from aiogram import F
 from aiogram.filters import Command
 
-from bot.core.constants.bot_constants import API_KEY
-from bot.core.scenarios import welcome_scenario, bind_scenario, \
-    get_stats_scenario, add_game_scenario
+from bot.core.scenarios import (
+    welcome_scenario,
+    bind_chat_id_to_user_scenario,
+    get_stats_scenario,
+    add_games_scenario,
+)
 from bot.core.handlers import basic
+from bot.core.utils.bot_init import bot
 from bot.core.utils.states import BindUserStates, AddGameStates
 
-bot = Bot(token=API_KEY)
 
 
 async def start():
@@ -29,15 +32,15 @@ async def start():
 
     # Binding scenario
     dp.message.register(
-        bind_scenario.start_bind,
+        bind_chat_id_to_user_scenario.start_bind,
         Command("bind")
     ),
     dp.message.register(
-        bind_scenario.bind_chat_to_dotabuff_id,
+        bind_chat_id_to_user_scenario.bind_chat_to_dotabuff_id,
         BindUserStates.dotabuff_id
     )
     dp.callback_query.register(
-        bind_scenario.where_dotabuff_id,
+        bind_chat_id_to_user_scenario.where_dotabuff_id,
         F.data.startswith("where_dotabuff_player_id"),
     )
 
@@ -47,14 +50,18 @@ async def start():
         Command("get_stats")
     )
 
-    # Add game scenario
+    # Add games scenario
     dp.message.register(
-        add_game_scenario.start_add_game,
+        add_games_scenario.start_add_games,
         Command("add_game")
     ),
     dp.message.register(
-        add_game_scenario.add_game_to_user,
-        AddGameStates.game_id
+        add_games_scenario.add_games_to_user,
+        AddGameStates.adding_games
+    )
+    dp.message.register(
+        add_games_scenario.print_count_games,
+        AddGameStates.print_count
     )
 
     try:

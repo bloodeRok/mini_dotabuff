@@ -1,7 +1,7 @@
 import aiohttp
 from aiohttp import ContentTypeError
 
-from bot.core.constants.urls import GET_USER_URL, BIND_USER_URL, ADD_GAME_URL
+from bot.core.constants.urls import GET_USER_URL, BIND_USER_URL, ADD_GAMES_URL
 
 
 class UserRepository:
@@ -31,12 +31,16 @@ class UserRepository:
                 return response.status, json
 
     @staticmethod
-    async def add_game(chat_id: int, game_id: str):
+    async def add_games(chat_id: int, count: int):
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                    ADD_GAME_URL.format(chat_id=chat_id),
+                    ADD_GAMES_URL.format(chat_id=chat_id),
                     data={
-                        "game_id": game_id
+                        "count": count
                     }
             ) as response:
-                return response.status, (await response.json())["detail"]
+                detail = None
+                status_code = response.status
+                if status_code not in [201, 406, 500]:
+                    detail = (await response.json())["detail"]
+                return status_code, detail

@@ -10,7 +10,7 @@ from core.app.handlers.schema_extensions.api_responses import (
     TelegramProfileResponse, UserResponse, APIResponse,
 )
 from core.app.serializers.requests import TelegramProfileCreateRequest, \
-    GameBindRequest
+    GamesAddRequest
 from core.app.serializers.responses import UserSerializer
 from core.app.services import TelegramProfileService, UserService
 
@@ -76,7 +76,46 @@ def tgprofiles_users_user(
         description="Synchronises requested count of games to user.\n"
                     "* Wrote player stats from game in db.\n"
                     "* Auto-creates game if it does not exist.\n",
-        request=GameBindRequest,
+        request=GamesAddRequest,
+        responses={
+            201: TelegramProfileResponse().created(),
+            404: TelegramProfileResponse().not_found(
+                examples=[
+                    api_examples.TelegramProfileNotFound,
+                    api_examples.PlayerNotFound
+                ]
+            ),
+            406: APIResponse.invalid_parameters(
+                examples=[
+                    api_examples.InvalidGameId
+                ]
+            ),
+            409: TelegramProfileResponse().conflict(
+                examples=[
+                    api_examples.PlayerGameConflict
+                ]
+            ),
+        }
+    )
+)
+@api_view(["POST"])
+def tgprofile_games_synchronise(
+        request: Request,
+        chat_id: int
+) -> HttpResponse:
+    TelegramProfileService().synchronise_games(
+        chat_id=chat_id
+    )
+    return HttpResponse("Success", status=status.HTTP_201_CREATED)
+
+@extend_schema_view(
+    post=extend_schema(
+        tags=["telegram profiles", "games"],
+        operation_id="Adds All Games",
+        description="Adds games requested count of games to user.\n"
+                    "* Wrote player stats from game in db.\n"
+                    "* Auto-creates game if it does not exist.\n",
+        request=GamesAddRequest,
         responses={
             201: TelegramProfileResponse().created(),
             404: TelegramProfileResponse().not_found(
@@ -103,12 +142,12 @@ def tgprofile_games(
         request: Request,
         chat_id: int
 ) -> HttpResponse:
-    data = GameBindRequest(data=request.data)
+    data = GamesAddRequest(data=request.data)
     data.is_valid(raise_exception=True)
     data = data.validated_data
 
-    TelegramProfileService().bind_game(
-        game_count=data["game_count"],
-        chat_id=chat_id
+    TelegramProfileService().add_games(
+        chat_id=chat_id,
+        count=data["count"]
     )
     return HttpResponse("Success", status=status.HTTP_201_CREATED)

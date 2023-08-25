@@ -1,3 +1,4 @@
+import time
 from typing import Optional
 
 from django.db import transaction
@@ -36,8 +37,13 @@ class TelegramProfileService:
 
         game_data = GameData(game_id=game_id)
         player_results = game_data.get_player_results(
-            nickname=user.name
+            nickname=user.name,
+            user_id=user.dotabuff_id
         )
+
+        if player_results is None:
+            return
+
         game_date, game_duration = game_data.get_time_fields()
 
         game = GameRepository().get_or_create(
@@ -50,6 +56,24 @@ class TelegramProfileService:
             user=user,
             player_results=player_results
         )
+
+    @staticmethod
+    def __get_all_games_ids(user: User) -> list[int]:
+        """
+        TODO
+        """
+
+        return GamesData.get_last_games_ids(
+            dotabuff_user_id=user.dotabuff_id,
+        )
+
+    def __get_user_by_chat_id(self, chat_id: int) -> User:
+        """
+        TODO
+        """
+
+        tgprofile = self.repository.find_by_chat_id(chat_id=chat_id)
+        return UserRepository().find_by_tgprofile(tgprofile=tgprofile)
 
     def get_or_create(self, chat_id: int, dotabuff_user_id: int) -> str:
         """
@@ -81,7 +105,7 @@ class TelegramProfileService:
 
         return self.repository.find_by_chat_id(chat_id=chat_id)
 
-    def synchronise_games(self, chat_id: int, games_count: int):
+    def synchronise_games(self, chat_id: int):
         """
         TODO
 
@@ -98,20 +122,16 @@ class TelegramProfileService:
                     return index
             return None
 
-        tgprofile = self.repository.find_by_chat_id(chat_id=chat_id)
-        user = UserRepository().find_by_tgprofile(tgprofile=tgprofile)
+        user = self.__get_user_by_chat_id(chat_id=chat_id)
 
         last_game = user.games.last()
         if last_game is None:
             raise UserGamesNotFound
 
-        all_games_ids = GamesData.get_last_games_ids(
-            dotabuff_user_id=user.dotabuff_id,
-            games_count=games_count
-        )
+        all_games_ids = self.__get_all_games_ids(user=user)
 
         first_registered_index = get_first_registered_index(
-            last_game_id=last_game.game_id,
+            last_game_id=last_game.adding_games,
             games_ids=all_games_ids
         )
 
@@ -124,3 +144,25 @@ class TelegramProfileService:
                     game_id=game_id,
                     user=user
                 )
+
+    def add_games(self, chat_id: int, count: int) -> None:
+        """
+        TODO
+        """
+
+        user = self.__get_user_by_chat_id(chat_id=chat_id)
+        all_games_ids = self.__get_all_games_ids(user=user)
+
+        with transaction.atomic():
+            for game_id in all_games_ids[:count][::-1]:
+                self.__bind_game(
+                    game_id=game_id,
+                    user=user
+                )
+                for sec in range(1, 15):
+                    time.sleep(1)
+                    print(f"I slept for {sec} second(s).")
+                print(f"I recorded game (id = {game_id}")
+
+
+

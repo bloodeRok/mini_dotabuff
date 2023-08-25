@@ -20,12 +20,12 @@ class TelegramProfileCreateRequest(serializers.ModelSerializer):
         ]
 
 
-class GameBindRequest(serializers.Serializer):
-    game_id = serializers.IntegerField(
-        help_text="ID of the game played."
+class GamesAddRequest(serializers.Serializer):
+    count = serializers.IntegerField(
+        help_text="Count of games to record."
     )
 
     class Meta:
         fields = [
-            "game_id",
+            "count",
         ]

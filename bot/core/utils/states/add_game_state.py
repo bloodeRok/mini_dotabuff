@@ -2,4 +2,5 @@ from aiogram.fsm.state import StatesGroup, State
 
 
 class AddGameStates(StatesGroup):
-    game_id = State()
+    adding_games = State()
+    print_count = State()

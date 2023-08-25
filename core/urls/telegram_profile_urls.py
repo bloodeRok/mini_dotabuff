@@ -2,8 +2,9 @@ from django.urls import path
 
 from core.app.handlers.telegram_profile_handlers import (
     tgprofiles,
+    tgprofile_games,
     tgprofiles_users_user,
-    tgprofile_games
+    tgprofile_games_synchronise
 )
 
 urlpatterns = [
@@ -16,6 +17,11 @@ urlpatterns = [
         "",
         tgprofiles,
         name="tgprofiles"
+    ),
+    path(
+        "<int:chat_id>/games/synchronise/",
+        tgprofile_games_synchronise,
+        name="tgprofile_games_synchronise"
     ),
     path(
         "<int:chat_id>/games/",

@@ -1,4 +1,4 @@
-from typing import Any, Tuple
+from typing import Any, Tuple, Optional
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from datetime import datetime, time
@@ -13,7 +13,8 @@ from core.app.api_exceptions.not_found import (
 from core.constants.defaults import (
     DOTABUFF_GAME_URL,
     FAKE_USER_AGENT,
-    DOTABUFF_PROFILE_URL, DOTABUFF_PROFILE_MATCHES_URL,
+    DOTABUFF_PROFILE_URL,
+    DOTABUFF_PROFILE_MATCHES_URL,
 )
 from core.constants.formats import (
     LONG_GAME_DURATION_FORMAT,
@@ -28,6 +29,7 @@ class DotabuffConnect:
     :raises NotAcceptable: when user_id is invalid
     :raises PlayerProfileNotFound: when user_id was not found in game.
     """
+
     @staticmethod
     def get_parsed_page(url: str) -> BeautifulSoup:
         session = requests.Session()
@@ -60,12 +62,13 @@ class GameData:
         parsed_page = DotabuffConnect.get_parsed_page(
             url=DOTABUFF_GAME_URL.format(game_id=str(game_id))
         )
+        self.game_id = game_id
         self.data = {
             "radiant": list(parsed_page.find("section", "radiant").
-                    find("tbody")),
+                            find("tbody")),
             "dire": list(parsed_page.find("section", "dire").find("tbody")),
             "winner": parsed_page.find("div", class_="match-result").text.
-                    split()[0].lower(),
+            split()[0].lower(),
             "date": parsed_page.find("time").attrs["datetime"],
             "duration": parsed_page.find("span", class_="duration").text
         }
@@ -87,23 +90,47 @@ class GameData:
         ).time()
         return game_date, game_duration
 
-    def __find_player(self, nickname: str) -> Tuple[Tag, str]:
+    def __find_player(self, user_id: int, nickname: str) -> Tuple[Optional[Tag], Optional[str]]:
+        """
+        TODO
+
+        :raises PlayerNotFound: when player with requested dotabuff ID was
+                not found.
+        """
+        game_id = self.game_id
         for team in [self.data["radiant"], self.data["dire"]]:
             for player in team:
-                nick_in_game = player. \
-                    find("td", class_="tf-pl single-lines").find("a").text
-                if nickname == nick_in_game:
-                    return player, list(self.data.keys())[
-                        list(self.data.values()).index(team)]
-        raise PlayerNotFound(nickname=nickname)
+                try:
+                    player_id = player \
+                        .find("td", class_="tf-pl single-lines") \
+                        .find("a").attrs["href"].split("/")[-1]
+                except AttributeError:
+                    print(game_id)
+                    return None, None
+                if str(user_id) == player_id:
+                    team_name = list(self.data.keys())[
+                               list(self.data.values()).index(team)
+                           ]
+                    return player, team_name
 
-    def get_player_results(self, nickname: str) -> dict[str, Any]:
+        raise PlayerNotFound(user_id=user_id, nickname=nickname, game_id=self.game_id)
+
+    def get_player_results(
+            self,
+            nickname: str,
+            user_id: int
+    ) -> Optional[dict[str, Any]]:
         """
         Gets player results from parsed data in class.
+
+        :raises PlayerNotFound: when player with requested dotabuff ID was
+                not found.
         """
 
         player_results = {}
-        player, team = self.__find_player(nickname=nickname)
+        player, team = self.__find_player(user_id=user_id, nickname=nickname)
+        if player is None or team is None:
+            return
 
         player_results["nickname"] = player. \
             find("td", class_="tf-pl single-lines").find("a").text
@@ -172,7 +199,6 @@ class GamesData:
     @staticmethod
     def get_last_games_ids(
             dotabuff_user_id: int,
-            games_count: int = 50
     ) -> list[int]:
         """
         TODO
@@ -185,10 +211,11 @@ class GamesData:
         )
         all_games = parsed_page.find("tbody").find_all("tr")
         all_games_ids = []
-        for game in all_games[:games_count]:
+        for game in all_games:
             all_games_ids.append(
-                game.find("td", class_="cell-large")
-                .find("a").attrs["href"].split("/")[-1]
+                int(
+                    game.find("td", class_="cell-large")
+                    .find("a").attrs["href"].split("/")[-1]
+                )
             )
         return all_games_ids
-
