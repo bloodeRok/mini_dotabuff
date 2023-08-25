@@ -1,67 +1,24 @@
 from django.db import transaction
-from django.db.models import Count, Avg
 
-from core.app.repositories import UserRepository, GameRepository
+from core.app.repositories import UserRepository, GameRepository, \
+    TelegramProfileRepository
 from core.app.repositories.player_stats_repository import PlayerStatsRepository
 from core.app.services.helpers.dotabuff_connection import GameData
-from core.models import User
+from core.models import User, TelegramProfile
 
 
 class UserService:
     repository = UserRepository()
 
-    def create(self, name: str) -> User:
+    def find_by_chat_id(self, chat_id: int) -> User:
         """
-        Creates user with passed name.
-
-        :raises UserConflict: when user already exists.
-        """
-
-        return self.repository.create(name=name)
-
-    def find_by_name(self, name: str) -> User:
-        """
-        Finds user via its name.
+        Finds user via its telegram profile.
 
         :raises UserNotFound: when user not found.
         """
 
-        return self.repository.find_by_name(name=name)
+        tgprofile = TelegramProfileRepository().find_by_chat_id(
+            chat_id=chat_id
+        )
 
-    def bind_game(
-            self,
-            game_id: int,
-            nickname: str,
-            user_name: str
-    ) -> None:
-        """
-        Binds the game to the passed user.
-        Adds users results of this game to the db.
-
-        :raises UserNotFound: when user not found.
-        :raises NotAcceptable: when game_id is invalid
-        :raises PlayerNotFoundException: when nickname
-                 was not found in game.
-        :raises PlayerGameConflict: when player
-                 already registered in this game.
-
-        """
-
-        player_stats_repository = PlayerStatsRepository()
-        game_repository = GameRepository()
-        user = self.repository.find_by_name(name=user_name)
-        game_data = GameData(game_id=game_id)
-        player_results = game_data.get_player_results(nickname=nickname)
-        game_date, game_duration = game_data.get_time_fields()
-
-        with transaction.atomic():
-            game = game_repository.get_or_create(
-                game_id=game_id,
-                game_date=game_date,
-                game_duration=game_duration
-            )
-            player_stats_repository.bind_game(
-                game=game,
-                user=user,
-                player_results=player_results
-            )
+        return self.repository.find_by_tgprofile(tgprofile=tgprofile)

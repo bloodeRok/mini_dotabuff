@@ -1,3 +1,13 @@
-from .conflict import UserConflict, PlayerGameConflict
-from .not_found import PlayerNotFound, UserNotFound, GameNotFound
-from .not_acceptable import NotAcceptable
+from .conflict import (
+    UserConflict,
+    PlayerGameConflict,
+)
+from .not_acceptable import NotAcceptable, OldLastGame
+from .not_found import (
+    PlayerNotFound,
+    UserNotFound,
+    GameNotFound,
+    TelegramProfileNotFound,
+    PlayerProfileNotFound,
+    UserGamesNotFound
+)

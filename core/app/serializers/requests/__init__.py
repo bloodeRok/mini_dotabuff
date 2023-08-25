@@ -1,1 +1,4 @@
-from .user_requests import UserCreateRequest, GameBindRequest
+from .telegram_profile_requests import (
+    TelegramProfileCreateRequest,
+    GamesAddRequest,
+)

@@ -37,6 +37,10 @@ GameNotFound = build_example(
     name="Game not found",
     exception=api_exceptions.GameNotFound
 )
+TelegramProfileNotFound = build_example(
+    name="Telegram profile not found",
+    exception=api_exceptions.TelegramProfileNotFound
+)
 
 
 # ------------ 406 ------------

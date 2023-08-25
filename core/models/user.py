@@ -9,6 +9,10 @@ class User(models.Model):
         max_length=NAME_MAX_LENGTH,
         unique=True
     )
+    dotabuff_id = models.IntegerField(
+        help_text="ID of the user on dotabuff.",
+        unique=True
+    )
 
     #  Relationships.
     games = models.ManyToManyField(
@@ -17,7 +21,7 @@ class User(models.Model):
     )
 
     def __repr__(self):
-        return f"<Game(" \
+        return f"<User(" \
                f"pk={self.pk}, " \
                f"name={self.name} " \
                f")>"
