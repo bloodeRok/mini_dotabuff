@@ -60,7 +60,9 @@ class TelegramProfileService:
     @staticmethod
     def __get_games_ids(user: User, count: Optional[int] = None) -> list[int]:
         """
-        TODO
+        Returns the requested number of IDs of last games.
+
+        :raises NotAcceptable: when user_id is invalid
         """
 
         return GamesData.get_last_games_ids(
@@ -70,7 +72,10 @@ class TelegramProfileService:
 
     def __get_user_by_chat_id(self, chat_id: int) -> User:
         """
-        TODO
+        Returns user by requested chat ID.
+
+        :raises TelegramProfileNotFound: when telegram profile not found.
+        :raises UserNotFound: when user not found.
         """
 
         tgprofile = self.repository.find_by_chat_id(chat_id=chat_id)
@@ -148,7 +153,17 @@ class TelegramProfileService:
 
     def add_games(self, chat_id: int, count: int) -> None:
         """
-        TODO
+        Adds requested count of games to a user found via chat ID.
+
+        :raises TelegramProfileNotFound: when telegram profile not found.
+        :raises UserNotFound: when user not found.
+        :raises NotAcceptable: when data is invalid
+            or Open Dota API is unavailable.
+        :raises UserNotFound: when user not found.
+        :raises PlayerNotFoundException: when nickname
+            was not found in game.
+        :raises PlayerGameConflict: when player
+            already registered in this game.
         """
 
         user = self.__get_user_by_chat_id(chat_id=chat_id)

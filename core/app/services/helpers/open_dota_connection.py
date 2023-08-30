@@ -1,13 +1,12 @@
-from typing import Any, Tuple, Optional
 import datetime
 import time
+from typing import Any, Tuple, Optional
 
 import requests
 
 from core.app.api_exceptions.not_acceptable import NotAcceptable
 from core.app.api_exceptions.not_found import (
     PlayerNotFound,
-    PlayerProfileNotFound,
 )
 from core.constants.defaults import (
     GAME_URL,
@@ -15,24 +14,19 @@ from core.constants.defaults import (
     PROFILE_URL,
     PROFILE_MATCHES_URL,
 )
-from core.constants.formats import (
-    LONG_GAME_DURATION_FORMAT,
-    GAME_DURATION_FORMAT,
-    DATE_FORMAT
-)
 from core.models import Hero
 
 
 class OpenDotaConnect:
-    """
-    Connects to Open dota and parsed page.
-
-    :raises NotAcceptable: when user_id is invalid
-    :raises PlayerProfileNotFound: when user_id was not found in game.
-    """
 
     @staticmethod
-    def get_data_json(url: str) -> dict[str, Any]:
+    def get_data_json(url: str) -> list[dict[str, Any]] | dict[str, Any]:
+        """
+        Connects to Open dota and return json with requested data.
+
+        :raises NotAcceptable: when URL is unavailable.
+        """
+
         session = requests.Session()
         session.headers.update(FAKE_USER_AGENT)
 
@@ -56,7 +50,7 @@ class GameData:
         """
         Connects to open dota api and takes the game information from there.
 
-        :raises NotAcceptable: when URL is invalid.
+        :raises NotAcceptable: when game ID is invalid or URL is unavailable.
         """
 
         json_data = OpenDotaConnect.get_data_json(
@@ -66,6 +60,9 @@ class GameData:
         self.data = json_data
 
     def get_time_fields(self) -> Tuple[datetime.datetime, datetime.time]:
+        """
+        Returns game duration and game date.
+        """
 
         raw_date = time.gmtime(
             self.data["start_time"]
@@ -94,10 +91,10 @@ class GameData:
             nickname: str
     ) -> dict[str, Any]:
         """
-        TODO
+        Finds requested player in game.
 
         :raises PlayerNotFound: when player with requested dota ID was
-         not found.
+         not found in the game.
         """
 
         for player in self.data["players"]:
@@ -119,7 +116,7 @@ class GameData:
         Gets player results from parsed data in class.
 
         :raises PlayerNotFound: when player with requested DOTA ID was
-                not found.
+        not found in the game.
         """
 
         player_results = {}
@@ -148,8 +145,8 @@ class PlayerData:
         """
         Connects to Open dota and takes the player information from there.
 
-        :raises NotAcceptable: when user_id is invalid
-        :raises PlayerProfileNotFound: when user_id was not found in game.
+        :raises NotAcceptable: when dota_user_id is invalid
+        or URL is unavailable.
         """
 
         url = PROFILE_URL.format(user_id=str(dota_user_id))
@@ -167,7 +164,9 @@ class GamesData:
             count: Optional[int] = 50
     ) -> list[int]:
         """
-        TODO
+        Returns the requested number of IDs of last games.
+
+        :raises NotAcceptable: when user_id is invalid
         """
 
         games = OpenDotaConnect.get_data_json(
@@ -179,5 +178,6 @@ class GamesData:
 
         all_games_ids = []
         for game in games:
-            all_games_ids.append(game["match_id"])
+            match_id = game["match_id"]
+            all_games_ids.append(match_id)
         return all_games_ids
