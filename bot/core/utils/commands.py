@@ -21,8 +21,8 @@ async def set_commands(bot: Bot):
             description="Получить статистику"
         ),
         BotCommand(
-            command="add_game",
-            description="Добавить игру"
+            command="add_games",
+            description="Добавить игры"
         ),
         BotCommand(
             command="photo",
