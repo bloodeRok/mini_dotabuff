@@ -13,15 +13,15 @@ class UserRepository:
         user.save()
         user.refresh_from_db()
 
-    def get_or_create(self, dotabuff_user_id: int, name: str) -> User:
+    def get_or_create(self, dota_user_id: int, name: str) -> User:
         """
         Creates user with passed chat ID or creates one.
         """
 
-        user = self.model.objects.filter(dotabuff_id=dotabuff_user_id).first()
+        user = self.model.objects.filter(dota_id=dota_user_id).first()
         if not user:
             user = self.model.objects.create(
-                dotabuff_id=dotabuff_user_id,
+                dota_id=dota_user_id,
                 name=name
             )
 

@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from core.app.api_exceptions import GameNotFound
 from core.models import Game
@@ -10,8 +10,8 @@ class GameRepository:
     def get_or_create(
             self,
             game_id: int,
-            game_date: datetime,
-            game_duration
+            game_date: datetime.datetime,
+            game_duration: datetime.time
     ) -> Game:
         """
         Retrieves game via its game_id

@@ -8,15 +8,15 @@ class TelegramProfileCreateRequest(serializers.ModelSerializer):
     chat_id = serializers.IntegerField(
         help_text=TelegramProfile._meta.get_field("chat_id").help_text
     )
-    dotabuff_user_id = serializers.IntegerField(
-        help_text="The ID of the user on dotabuff."
+    dota_user_id = serializers.IntegerField(
+        help_text="The ID of the user in DOTA 2."
     )
 
     class Meta:
         model = TelegramProfile
         fields = [
             "chat_id",
-            "dotabuff_user_id"
+            "dota_user_id"
         ]
 
 

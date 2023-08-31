@@ -15,13 +15,13 @@ class UserRepository:
                 return await response.json()
 
     @staticmethod
-    async def bind_user(chat_id: int, dotabuff_user_id: int):
+    async def bind_user(chat_id: int, dota_user_id: int):
         async with aiohttp.ClientSession() as session:
             async with session.post(
                     BIND_USER_URL,
                     data={
                         "chat_id": chat_id,
-                        "dotabuff_user_id": dotabuff_user_id
+                        "dota_user_id": dota_user_id
                     }
             ) as response:
                 try:

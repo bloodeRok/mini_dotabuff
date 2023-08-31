@@ -10,7 +10,7 @@ from core.app.repositories import (
     GameRepository,
 )
 from core.app.repositories.player_stats_repository import PlayerStatsRepository
-from core.app.services.helpers.dotabuff_connection import GameData, PlayerData, \
+from core.app.services.helpers.open_dota_connection import GameData, PlayerData, \
     GamesData
 from core.models import TelegramProfile, User
 
@@ -38,7 +38,7 @@ class TelegramProfileService:
         game_data = GameData(game_id=game_id)
         player_results = game_data.get_player_results(
             nickname=user.name,
-            user_id=user.dotabuff_id
+            dota_id=user.dota_id
         )
 
         if player_results is None:
@@ -58,43 +58,49 @@ class TelegramProfileService:
         )
 
     @staticmethod
-    def __get_all_games_ids(user: User) -> list[int]:
+    def __get_games_ids(user: User, count: Optional[int] = None) -> list[int]:
         """
-        TODO
+        Returns the requested number of IDs of last games.
+
+        :raises NotAcceptable: when user_id is invalid
         """
 
         return GamesData.get_last_games_ids(
-            dotabuff_user_id=user.dotabuff_id,
+            dota_id=user.dota_id,
+            count=count
         )
 
     def __get_user_by_chat_id(self, chat_id: int) -> User:
         """
-        TODO
+        Returns user by requested chat ID.
+
+        :raises TelegramProfileNotFound: when telegram profile not found.
+        :raises UserNotFound: when user not found.
         """
 
         tgprofile = self.repository.find_by_chat_id(chat_id=chat_id)
         return UserRepository().find_by_tgprofile(tgprofile=tgprofile)
 
-    def get_or_create(self, chat_id: int, dotabuff_user_id: int) -> str:
+    def get_or_create(self, chat_id: int, dota_user_id: int) -> str:
         """
         Creates telegram profile with passed chat ID.
         """
 
         user_repository = UserRepository()
-        dotabuff_nickcname = PlayerData.get_nickname(
-            dotabuff_user_id=dotabuff_user_id
+        dota_nickcname = PlayerData.get_nickname(
+            dota_user_id=dota_user_id
         )
         user = user_repository.get_or_create(
-            dotabuff_user_id=dotabuff_user_id,
-            name=dotabuff_nickcname
+            dota_user_id=dota_user_id,
+            name=dota_nickcname
         )
-        if user.name != dotabuff_nickcname:
+        if user.name != dota_nickcname:
             user_repository.update_name(
                 user=user,
-                new_name=dotabuff_nickcname
+                new_name=dota_nickcname
             )
         self.repository.bind_user(chat_id=chat_id, user=user)
-        return dotabuff_nickcname
+        return dota_nickcname
 
     def find_by_chat_id(self, chat_id: int) -> TelegramProfile:
         """
@@ -128,7 +134,7 @@ class TelegramProfileService:
         if last_game is None:
             raise UserGamesNotFound
 
-        all_games_ids = self.__get_all_games_ids(user=user)
+        all_games_ids = self.__get_games_ids(user=user)
 
         first_registered_index = get_first_registered_index(
             last_game_id=last_game.adding_games,
@@ -147,11 +153,24 @@ class TelegramProfileService:
 
     def add_games(self, chat_id: int, count: int) -> None:
         """
-        TODO
+        Adds requested count of games to a user found via chat ID.
+
+        :raises TelegramProfileNotFound: when telegram profile not found.
+        :raises UserNotFound: when user not found.
+        :raises NotAcceptable: when data is invalid
+            or Open Dota API is unavailable.
+        :raises UserNotFound: when user not found.
+        :raises PlayerNotFoundException: when nickname
+            was not found in game.
+        :raises PlayerGameConflict: when player
+            already registered in this game.
         """
 
         user = self.__get_user_by_chat_id(chat_id=chat_id)
-        all_games_ids = self.__get_all_games_ids(user=user)
+        all_games_ids = self.__get_games_ids(
+            user=user,
+            count=count
+        )
 
         with transaction.atomic():
             for game_id in all_games_ids[:count][::-1]:
@@ -159,10 +178,3 @@ class TelegramProfileService:
                     game_id=game_id,
                     user=user
                 )
-                for sec in range(1, 15):
-                    time.sleep(1)
-                    print(f"I slept for {sec} second(s).")
-                print(f"I recorded game (id = {game_id}")
-
-
-

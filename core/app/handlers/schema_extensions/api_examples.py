@@ -46,8 +46,8 @@ TelegramProfileNotFound = build_example(
 # ------------ 406 ------------
 
 InvalidGameId = OpenApiExample(
-    name="DOTABUFF problem",
-    value={"detail": "DOTABUFF URL is not available."},
+    name="Open Dota problem",
+    value={"detail": "Open Dota not available."},
     status_codes=[406],
     response_only=True
 )

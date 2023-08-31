@@ -36,12 +36,12 @@ async def start():
         Command("bind")
     ),
     dp.message.register(
-        bind_chat_id_to_user_scenario.bind_chat_to_dotabuff_id,
-        BindUserStates.dotabuff_id
+        bind_chat_id_to_user_scenario.bind_chat_to_dota_id,
+        BindUserStates.dota_id
     )
     dp.callback_query.register(
-        bind_chat_id_to_user_scenario.where_dotabuff_id,
-        F.data.startswith("where_dotabuff_player_id"),
+        bind_chat_id_to_user_scenario.where_dota_id,
+        F.data.startswith("where_dota_player_id"),
     )
 
     # Get stats
@@ -53,7 +53,7 @@ async def start():
     # Add games scenario
     dp.message.register(
         add_games_scenario.start_add_games,
-        Command("add_game")
+        Command("add_games")
     ),
     dp.message.register(
         add_games_scenario.add_games_to_user,

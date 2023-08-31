@@ -3,28 +3,22 @@ from django.db import models
 from core.constants.field_restrictions import NAME_MAX_LENGTH
 
 
-class User(models.Model):
+class Hero(models.Model):
     name = models.CharField(
         help_text="Name of the user.",
         max_length=NAME_MAX_LENGTH,
         unique=True
     )
-    dota_id = models.IntegerField(
-        help_text="ID of the user in DOTA 2.",
+    hero_id = models.IntegerField(
+        help_text="ID of the hero on Open Dota.",
         unique=True
-    )
-
-    #  Relationships.
-    games = models.ManyToManyField(
-        "Game",
-        through="PlayerStats"
     )
 
     def __repr__(self):
         return f"<User(" \
                f"pk={self.pk}, " \
-               f"dota_id={self.dota_id}, " \
-               f"name={self.name} " \
+               f"name={self.name}, " \
+               f"hero_id={self.hero_id} " \
                f")>"
 
     def __str__(self):

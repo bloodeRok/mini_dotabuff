@@ -3,7 +3,7 @@ from django.db import transaction
 from core.app.repositories import UserRepository, GameRepository, \
     TelegramProfileRepository
 from core.app.repositories.player_stats_repository import PlayerStatsRepository
-from core.app.services.helpers.dotabuff_connection import GameData
+from core.app.services.helpers.open_dota_connection import GameData
 from core.models import User, TelegramProfile
 
 

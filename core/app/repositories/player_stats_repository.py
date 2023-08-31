@@ -29,7 +29,7 @@ class PlayerStatsRepository:
                 player=user,
                 nickname=player_results["nickname"],
                 win=player_results["win"],
-                hero=player_results["hero"],
+                hero=player_results["hero"].name,
                 kills=player_results["kills"],
                 deaths=player_results["deaths"],
                 assists=player_results["assists"],

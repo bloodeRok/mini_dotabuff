@@ -8,8 +8,8 @@ class NotFound(APIException):
 
 
 class PlayerNotFound(NotFound):
-    def __init__(self, nickname: str, user_id: int, game_id: int):
-        self.detail = f"Игрок с ником '{nickname}' (id = {user_id})" \
+    def __init__(self, nickname: str, dota_id: int, game_id: int):
+        self.detail = f"Игрок с ником '{nickname}' (id = {dota_id})" \
                       f" не был найден в игре (id игры = {game_id})."
 
 

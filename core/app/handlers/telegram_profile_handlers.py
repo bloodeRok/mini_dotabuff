@@ -20,7 +20,8 @@ from core.app.services import TelegramProfileService, UserService
         tags=["telegram profiles", "create"],
         operation_id="Create Telegram Profile",
         description="Creates Telegram Profile with supplied parameters.\n"
-                    "* Creates user if it was not found by dotabuff_id.",
+                    "* Binds telegram profile to user with passed dota_id."
+                    "* Creates user if it was not found by dota_id.",
         request=TelegramProfileCreateRequest,
         responses={
             204: TelegramProfileResponse().updated()
@@ -37,7 +38,7 @@ def tgprofiles(
 
     nickname = TelegramProfileService().get_or_create(
         chat_id=data["chat_id"],
-        dotabuff_user_id=data["dotabuff_user_id"]
+        dota_user_id=data["dota_user_id"]
     )
     return Response(
         data={"nickname": nickname},
