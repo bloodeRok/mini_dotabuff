@@ -1,6 +1,6 @@
 import asyncio
 
-from aiogram import Bot, Dispatcher
+from aiogram import Dispatcher
 from aiogram import F
 from aiogram.filters import Command
 
@@ -9,20 +9,18 @@ from bot.core.scenarios import (
     bind_chat_id_to_user_scenario,
     get_stats_scenario,
     add_games_scenario,
+    basic_scenario,
 )
-from bot.core.handlers import basic
 from bot.core.utils.bot_init import bot
 from bot.core.utils.states import BindUserStates, AddGameStates
 
 
-
 async def start():
-
     dp = Dispatcher()
-    dp.startup.register(basic.start_bot)
+    dp.startup.register(basic_scenario.start_bot)
 
-    # Basic
-    dp.message.register(basic.get_photo, F.photo)
+    # Basic scenarios
+    dp.message.register(basic_scenario.get_photo, F.photo)
 
     # Welcome scenario
     dp.message.register(
@@ -44,7 +42,7 @@ async def start():
         F.data.startswith("where_dota_player_id"),
     )
 
-    # Get stats
+    # Get stats scenario
     dp.message.register(
         get_stats_scenario.get_stats,
         Command("get_stats")

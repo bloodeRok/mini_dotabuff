@@ -1,7 +1,8 @@
 import aiohttp
 from aiohttp import ContentTypeError
 
-from bot.core.constants.urls import GET_USER_URL, BIND_USER_URL, ADD_GAMES_URL
+from bot.core.constants.urls import GET_USER_URL, BIND_USER_URL, ADD_GAMES_URL, \
+    SYNCHRONISE_GAMES_URL
 
 
 class UserRepository:
@@ -10,7 +11,7 @@ class UserRepository:
     async def get_stats(chat_id: int):
         async with aiohttp.ClientSession() as session:
             async with session.get(
-                    GET_USER_URL.format(chat_id=chat_id)
+                    url=GET_USER_URL.format(chat_id=chat_id)
             ) as response:
                 return await response.json()
 
@@ -18,7 +19,7 @@ class UserRepository:
     async def bind_user(chat_id: int, dota_user_id: int):
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                    BIND_USER_URL,
+                    url=BIND_USER_URL,
                     data={
                         "chat_id": chat_id,
                         "dota_user_id": dota_user_id
@@ -34,7 +35,7 @@ class UserRepository:
     async def add_games(chat_id: int, count: int):
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                    ADD_GAMES_URL.format(chat_id=chat_id),
+                    url=ADD_GAMES_URL.format(chat_id=chat_id),
                     data={
                         "count": count
                     }
@@ -44,3 +45,11 @@ class UserRepository:
                 if status_code not in [201, 406, 500]:
                     detail = (await response.json())["detail"]
                 return status_code, detail
+
+    @staticmethod
+    async def synchronise_games(chat_id: int):
+        async with aiohttp.ClientSession() as session:
+            async with session.patch(
+                url=SYNCHRONISE_GAMES_URL.format(chat_id=chat_id),
+                data=
+            )

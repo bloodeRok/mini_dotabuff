@@ -1,4 +1,3 @@
-import time
 from typing import Optional
 
 from django.db import transaction
@@ -10,8 +9,11 @@ from core.app.repositories import (
     GameRepository,
 )
 from core.app.repositories.player_stats_repository import PlayerStatsRepository
-from core.app.services.helpers.open_dota_connection import GameData, PlayerData, \
-    GamesData
+from core.app.services.helpers.open_dota_connection import (
+    GameData,
+    PlayerData,
+    GamesData,
+)
 from core.models import TelegramProfile, User
 
 
@@ -30,9 +32,9 @@ class TelegramProfileService:
         :raises UserNotFound: when user not found.
         :raises NotAcceptable: when game_id is invalid
         :raises PlayerNotFoundException: when nickname
-                 was not found in game.
+            was not found in game.
         :raises PlayerGameConflict: when player
-                 already registered in this game.
+            already registered in this game.
         """
 
         game_data = GameData(game_id=game_id)
@@ -113,10 +115,17 @@ class TelegramProfileService:
 
     def synchronise_games(self, chat_id: int):
         """
-        TODO
+        Synchronises user's games.
 
         :raises UserGamesNotFound: when user has no games.
         :raises OldLastGame: when user last game was more than 50 games ago.
+        :raises TelegramProfileNotFound: when telegram profile not found.
+        :raises UserNotFound: when user not found.
+        :raises NotAcceptable: when game_id is invalid
+        :raises PlayerNotFoundException: when nickname
+            was not found in game.
+        :raises PlayerGameConflict: when player
+            already registered in this game.
         """
 
         def get_first_registered_index(
@@ -130,14 +139,14 @@ class TelegramProfileService:
 
         user = self.__get_user_by_chat_id(chat_id=chat_id)
 
-        last_game = user.games.last()
+        last_game = user.games.objects.last()
         if last_game is None:
             raise UserGamesNotFound
 
         all_games_ids = self.__get_games_ids(user=user)
 
         first_registered_index = get_first_registered_index(
-            last_game_id=last_game.adding_games,
+            last_game_id=last_game.game_id,
             games_ids=all_games_ids
         )
 
