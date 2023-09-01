@@ -49,7 +49,11 @@ class UserRepository:
     @staticmethod
     async def synchronise_games(chat_id: int):
         async with aiohttp.ClientSession() as session:
-            async with session.patch(
-                url=SYNCHRONISE_GAMES_URL.format(chat_id=chat_id),
-                data=
-            )
+            async with session.post(
+                url=SYNCHRONISE_GAMES_URL.format(chat_id=chat_id)
+            ) as response:
+                detail = None
+                status_code = response.status
+                if status_code not in [201, 406, 500]:
+                    detail = (await response.json())["detail"]
+                return status_code, detail

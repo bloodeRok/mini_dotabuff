@@ -60,7 +60,7 @@ class TelegramProfileService:
         )
 
     @staticmethod
-    def __get_games_ids(user: User, count: Optional[int] = None) -> list[int]:
+    def __get_games_ids(user: User, count: Optional[int] = 50) -> list[int]:
         """
         Returns the requested number of IDs of last games.
 
@@ -139,7 +139,7 @@ class TelegramProfileService:
 
         user = self.__get_user_by_chat_id(chat_id=chat_id)
 
-        last_game = user.games.objects.last()
+        last_game = user.games.last()
         if last_game is None:
             raise UserGamesNotFound
 

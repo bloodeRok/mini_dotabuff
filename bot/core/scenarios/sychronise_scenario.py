@@ -2,40 +2,47 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
 from bot.core.keyboards import (
-    bind_game__where_dota_id__kb,
     to_admin__kb,
 )
 from bot.core.repositories import UserRepository
-from bot.core.utils.states import BindUserStates
-from ..constants.messages import START_BIND_MESSAGE
-
-
-async def start_bind(message: Message, state: FSMContext):
-    await message.answer(
-        START_BIND_MESSAGE,
-        reply_markup=bind_game__where_dota_id__kb
-    )
-    await state.set_state(BindUserStates.dota_id)
+from ..constants.sticker_constants import DOWNLOAD
+from ..utils.bot_init import bot
 
 
 async def synchronise_games(message: Message, state: FSMContext):
+    chat_id = message.chat.id
 
-    res_code, json = await UserRepository().bind_user(
-        chat_id=message.chat.id,
+    download_messages = [
+        await bot.send_message(
+            chat_id=chat_id,
+            text="Идёт процесс синхронизации... Подождите."
+        ),
+        await bot.send_sticker(
+            chat_id=chat_id,
+            sticker=DOWNLOAD
+        )
+    ]
+
+    res_code, detail = await UserRepository().synchronise_games(
+        chat_id=chat_id,
     )
+
+    for message in download_messages:
+        await message.delete()
 
     match res_code:
         case 201:
-            nickname = json["nickname"]
             await message.answer(
-                f"Игрок c ником \"{nickname}\" успешно привязан!")
+                f"Игры успешно синхронизованы!"
+            )
 
         case 404:
-            await message.answer("Я не нашёл профиль с таким ID.")
+            await message.answer(detail)
 
         case 500:
             await message.answer(
                 "Что-то пошло не так!",
                 reply_markup=to_admin__kb
             )
+
     await state.clear()

@@ -39,7 +39,8 @@ async def bind_chat_to_dota_id(message: Message, state: FSMContext):
         case 201:
             nickname = json["nickname"]
             await message.answer(
-                f"Игрок c ником \"{nickname}\" успешно привязан!")
+                f"Игрок c ником \"{nickname}\" успешно привязан!"
+            )
 
         case 404:
             await message.answer("Я не нашёл профиль с таким ID.")

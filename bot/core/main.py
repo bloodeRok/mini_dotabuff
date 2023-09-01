@@ -10,6 +10,7 @@ from bot.core.scenarios import (
     get_stats_scenario,
     add_games_scenario,
     basic_scenario,
+    sychronise_scenario
 )
 from bot.core.utils.bot_init import bot
 from bot.core.utils.states import BindUserStates, AddGameStates
@@ -60,6 +61,12 @@ async def start():
     dp.message.register(
         add_games_scenario.print_count_games,
         AddGameStates.print_count
+    )
+
+    # Synchronise scenario
+    dp.message.register(
+        sychronise_scenario.synchronise_games,
+        Command("synchronise")
     )
 
     try:
