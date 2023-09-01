@@ -20,7 +20,6 @@ async def start_add_games(message: Message, state: FSMContext):
 
 
 async def add_games_to_user(message: Message, state: FSMContext):
-    a = 5
     user_answer = message.text
     if user_answer == "Сам введу":
         await state.set_state(AddGameStates.print_count)
@@ -28,6 +27,44 @@ async def add_games_to_user(message: Message, state: FSMContext):
 
     chat_id = message.chat.id
     count = int(message.text)
+    wait_time = int(count * 0.6)
+
+    download_messages = [
+        await bot.send_message(
+            chat_id=chat_id,
+            text="Идёт процесс синхронизации... Подождите\n"
+                 f"Примерное время ожидания: {wait_time} сек"
+        ),
+        await bot.send_sticker(
+            chat_id=chat_id,
+            sticker=DOWNLOAD
+        )
+    ]
+
+    status, detail = await UserRepository().add_games(
+        chat_id=chat_id,
+        count=count
+    )
+
+    for message in download_messages:
+        await message.delete()
+
+    await print_result(message=message, status=status, detail=detail)
+
+
+async def print_count_games(message: Message, state: FSMContext):
+    chat_id = message.chat.id
+
+    try:
+        count = int(message.text)
+    except ValueError:
+        await message.reply("Количество игр должно иметь только цифры!")
+        return
+
+    msg = await bot.send_sticker(
+        chat_id=chat_id,
+        sticker=DOWNLOAD
+    )
 
     if count > 50:
         await bot.send_message(
@@ -35,14 +72,10 @@ async def add_games_to_user(message: Message, state: FSMContext):
                  " Я установил это значение на 50.",
             chat_id=chat_id
         )
-
-    msg = await bot.send_sticker(
-        chat_id=message.chat.id,
-        sticker=DOWNLOAD
-    )
+        count = 50
 
     status, detail = await UserRepository().add_games(
-        chat_id=message.chat.id,
+        chat_id=chat_id,
         count=count
     )
 
@@ -50,32 +83,7 @@ async def add_games_to_user(message: Message, state: FSMContext):
 
     await print_result(message=message, status=status, detail=detail)
 
-
-async def print_count_games(message: Message, state: FSMContext):
-    try:
-        count = int(message.text)
-    except ValueError:
-        await message.reply("Количество игр должно иметь только цифры!")
-        return
-
-    await bot.send_sticker(
-        chat_id=message.chat.id,
-        sticker=DOWNLOAD
-    )
-
-    status, detail = await UserRepository().add_games(
-        chat_id=message.chat.id,
-        count=count
-    )
-
-    await bot.delete_message(
-        chat_id=message.chat.id,
-        message_id=message.message_id
-    )
-
-    await print_result(message=message, status=status, detail=detail)
-
-    await state.set_state(AddGameStates.adding_games)
+    await state.clear()
 
 
 async def print_result(message: Message, status: int, detail: Optional[str]):
@@ -93,7 +101,7 @@ async def print_result(message: Message, status: int, detail: Optional[str]):
             await message.answer(
                 "У тебя уже есть добавленные игры."
                 " Синхронизовать твои игры?",
-                # TODO reply_markup=
+                # TODO reply_markup=from_add_to_synchronise__kb
             )
 
         case 500:

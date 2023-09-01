@@ -25,10 +25,13 @@ async def set_commands(bot: Bot):
             description="Добавить игры"
         ),
         BotCommand(
+            command="synchronise",
+            description="Синхронизировать игры"
+        ),
+        BotCommand(
             command="photo",
             description="Прислать фото"
         ),
-
     ]
 
     await bot.set_my_commands(
