@@ -22,6 +22,10 @@ async def start():
 
     # Basic scenarios
     dp.message.register(basic_scenario.get_photo, F.photo)
+    dp.callback_query.register(
+        basic_scenario.state_clear,
+        F.data.startswith("state_clear")
+    )
 
     # Welcome scenario
     dp.message.register(
@@ -59,8 +63,8 @@ async def start():
         AddGameStates.adding_games
     )
     dp.message.register(
-        add_games_scenario.print_count_games,
-        AddGameStates.print_count
+        add_games_scenario.manual_count_input,
+        AddGameStates.manual_count_input
     )
 
     # Synchronise scenario

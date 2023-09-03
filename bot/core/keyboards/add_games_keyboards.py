@@ -5,7 +5,7 @@ from aiogram.types import (
     ReplyKeyboardMarkup
 )
 
-# input count of games
+# Input count of games
 add_games__count__buttons = [
     [
         KeyboardButton(
@@ -42,4 +42,25 @@ add_game__count__kb = ReplyKeyboardMarkup(
     keyboard=add_games__count__buttons,
     resize_keyboard=True,
     one_time_keyboard=True
+)
+
+
+# Redirect from adding to synchronise
+add_games__from_add_to_synchronise___buttons = [
+    [
+        InlineKeyboardButton(
+            text="Да",
+            callback_data="from_add_to_synchronise"
+        )
+    ],
+    [
+        InlineKeyboardButton(
+            text="Нет",
+            callback_data="state_clear"
+        )
+    ]
+]
+
+add_games__from_add_to_synchronise__kb = InlineKeyboardMarkup(
+    inline_keyboard=add_games__from_add_to_synchronise___buttons
 )
