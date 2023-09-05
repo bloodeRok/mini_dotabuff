@@ -6,9 +6,11 @@ from aiogram.types import Message
 from bot.core.constants.messages import START_ADD_GAME_MESSAGE
 from bot.core.constants.sticker_constants import DOWNLOAD
 from bot.core.keyboards import add_game__count__kb, to_admin__kb
-from bot.core.keyboards.add_games_keyboards import \
-    add_games__from_add_to_synchronise__kb
+from bot.core.keyboards.add_games_keyboards import (
+    add_games__from_add_to_synchronise__kb,
+)
 from bot.core.repositories import UserRepository
+from .sychronise_scenario import synchronise_games
 from bot.core.utils.bot_init import bot
 from bot.core.utils.states import AddGameStates
 
@@ -90,31 +92,53 @@ async def adding_games_to_user(
     for message in download_messages:
         await message.delete()
 
-    await print_result(message=message, status=status, detail=detail)
+    await print_result(
+        message=message,
+        status=status,
+        detail=detail,
+        state=state
+    )
 
-    await state.clear()
 
-
-async def print_result(message: Message, status: int, detail: Optional[str]):
+async def print_result(
+        message: Message,
+        status: int,
+        detail: Optional[str],
+        state: FSMContext
+):
     match status:
         case 201:
             await message.answer("Игры успешно добавлены!")
+            await state.clear()
 
         case 404:
             await message.answer(detail)
+            await state.clear()
 
         case 406:
             await message.answer("Они думают, что мы дудосеры :(")
+            await state.clear()
 
         case 409:
-            await message.answer(
-                "У тебя уже есть добавленные игры."
+            await bot.send_message(
+                chat_id=message.chat.id,
+                text="У тебя уже есть добавленные игры."
                 " Синхронизовать твои игры?",
                 reply_markup=add_games__from_add_to_synchronise__kb
             )
+            await state.set_state(AddGameStates.user_has_games)
 
         case 500:
             await message.answer(
                 "Что-то пошло не так!",
                 reply_markup=to_admin__kb
             )
+            await state.clear()
+
+
+async def user_has_games(message: Message, state: FSMContext):
+    if message.text == "Да":
+        await synchronise_games(message=message, state=state)
+        return
+    await bot.send_message(chat_id=message.chat.id, text="Ну ладно...")
+    await state.clear()

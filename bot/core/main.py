@@ -13,7 +13,8 @@ from bot.core.scenarios import (
     sychronise_scenario
 )
 from bot.core.utils.bot_init import bot
-from bot.core.utils.states import BindUserStates, AddGameStates
+from bot.core.utils.states import BindUserStates, AddGameStates, BasicStates, \
+    SynchroniseStates
 
 
 async def start():
@@ -26,6 +27,9 @@ async def start():
         basic_scenario.state_clear,
         F.data.startswith("state_clear")
     )
+    dp.message.register(basic_scenario.multiple_def, Command("lol"))
+    dp.message.register(basic_scenario.multiple_def, BasicStates.test)
+    dp.message.register(basic_scenario.test, Command("test"))
 
     # Welcome scenario
     dp.message.register(
@@ -43,8 +47,12 @@ async def start():
         BindUserStates.dota_id
     )
     dp.callback_query.register(
-        bind_chat_id_to_user_scenario.where_dota_id,
-        F.data.startswith("where_dota_player_id"),
+        bind_chat_id_to_user_scenario.where_dota_id_dotabuff,
+        F.data.startswith("where_dota_player_id_dotabuff"),
+    )
+    dp.callback_query.register(
+        bind_chat_id_to_user_scenario.where_dota_id_dota_client,
+        F.data.startswith("where_dota_player_id_dota_client"),
     )
 
     # Get stats scenario
@@ -59,6 +67,10 @@ async def start():
         Command("add_games")
     ),
     dp.message.register(
+        add_games_scenario.user_has_games,
+        AddGameStates.user_has_games
+    )
+    dp.message.register(
         add_games_scenario.add_games_to_user,
         AddGameStates.adding_games
     )
@@ -71,6 +83,10 @@ async def start():
     dp.message.register(
         sychronise_scenario.synchronise_games,
         Command("synchronise")
+    )
+    dp.message.register(
+        sychronise_scenario.user_has_no_games,
+        SynchroniseStates.user_has_no_games
     )
 
     try:
