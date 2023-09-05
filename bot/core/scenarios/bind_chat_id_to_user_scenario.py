@@ -2,14 +2,18 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 from aiogram.types.input_file import FSInputFile
 
-from ..constants.bot_constants import PICTURES_PATH
-from ..constants.messages import START_BIND_MESSAGE
 from bot.core.keyboards import (
     bind_game__where_dota_id__kb,
     to_admin__kb,
 )
 from bot.core.repositories import UserRepository
 from bot.core.utils.states import BindUserStates
+from ..constants.bot_constants import (
+    DOTABUFF_MAIN_PHOTO_PATH,
+    DOTABUFF_URL_PHOTO_PATH, DOTA_CLIENT_MAIN_PHOTO_PATH,
+    DOTA_CLIENT_WINDOW_PHOTO_PATH,
+)
+from ..constants.messages import START_BIND_MESSAGE
 from ..utils.bot_init import bot
 
 
@@ -43,7 +47,7 @@ async def bind_chat_to_dota_id(message: Message, state: FSMContext):
             )
 
         case 404:
-            await message.answer("Я не нашёл профиль с таким ID.")
+            await message.answer(json["detail"])
 
         case 500:
             await message.answer(
@@ -53,25 +57,37 @@ async def bind_chat_to_dota_id(message: Message, state: FSMContext):
     await state.clear()
 
 
-async def where_dota_id(call: CallbackQuery):
+async def where_dota_id_dotabuff(call: CallbackQuery):
+    steps = {
+        DOTABUFF_MAIN_PHOTO_PATH: "1) Нажимаешь сюда\n"
+                                  "(Если потребуется авторизоваться "
+                                  "через steam - авторизовываешься)",
+        DOTABUFF_URL_PHOTO_PATH: "2) Из URL'a достаёшь эти цифры."
+                                 " Вставляешь их ниже в сообщение"
+    }
 
-    # main_photo = FSInputFile(PICTURES_PATH + "\dotabuff_main.jpg")
-    # await bot.send_photo(
-    #     call.from_user.id,
-    #     main_photo,
-    #     caption="1) Нажимешь сюда\n"
-    #             "(Если потребуется авторизоваться "
-    #             "через steam - авторизовываешься)"
-    # )
-    #
-    # url_photo = FSInputFile(PICTURES_PATH + r"\URL.jpg")
-    # await bot.send_photo(
-    #     chat_id=call.from_user.id,
-    #     photo=url_photo,
-    #     caption="2) Из URL'a достаёшь эти цифры."
-    #             " Вставляешь их ниже в сообщение"
-    # )
-    """ TODO """
+    for path, caption in steps.items():
+        await bot.send_photo(
+            chat_id=call.from_user.id,
+            photo=FSInputFile(path),
+            caption=caption
+        )
 
-    await bot.send_message(chat_id=call.from_user.id, text="Чини фото!")
+    await call.answer()
+
+
+async def where_dota_id_dota_client(call: CallbackQuery):
+    steps = {
+        DOTA_CLIENT_MAIN_PHOTO_PATH: "1) Нажимаешь сюда",
+        DOTA_CLIENT_WINDOW_PHOTO_PATH: "2) Забираешь эти цифры."
+                                       " Вставляешь их ниже в сообщение"
+    }
+
+    for path, caption in steps.items():
+        await bot.send_photo(
+            chat_id=call.from_user.id,
+            photo=FSInputFile(path),
+            caption=caption
+        )
+
     await call.answer()

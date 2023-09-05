@@ -2,6 +2,7 @@ import datetime
 import time
 from typing import Any, Tuple, Optional
 
+import pytz
 import requests
 
 from core.app.api_exceptions.not_acceptable import NotAcceptable
@@ -73,7 +74,8 @@ class GameData:
             day=raw_date.tm_mday,
             hour=raw_date.tm_hour,
             minute=raw_date.tm_min,
-            second=raw_date.tm_sec
+            second=raw_date.tm_sec,
+            tzinfo=pytz.UTC
         )
 
         duration_secs = self.data["duration"]
@@ -153,7 +155,10 @@ class PlayerData:
         json_data = OpenDotaConnect.get_data_json(
             url=url
         )
-        return json_data["profile"]["personaname"]
+        try:
+            return json_data["profile"]["personaname"]
+        except KeyError:
+            raise PlayerNotFound(dota_id=dota_user_id)
 
 
 class GamesData:

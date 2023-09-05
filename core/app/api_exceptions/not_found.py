@@ -1,3 +1,5 @@
+from typing import Optional
+
 from rest_framework import status
 from rest_framework.exceptions import APIException
 
@@ -8,9 +10,17 @@ class NotFound(APIException):
 
 
 class PlayerNotFound(NotFound):
-    def __init__(self, nickname: str, dota_id: int, game_id: int):
-        self.detail = f"Игрок с ником '{nickname}' (id = {dota_id})" \
-                      f" не был найден в игре (id игры = {game_id})."
+    def __init__(
+            self,
+            dota_id: int,
+            nickname: Optional[str] = None,
+            game_id: Optional[int] = None
+    ):
+        self.detail = "Игрок {0}(id игрока = {1}) не был найден{2}.".format(
+            f"с ником '{nickname}' " if nickname else "",
+            dota_id,
+            f" в игре (id игры = {game_id})" if game_id else ""
+        )
 
 
 class PlayerProfileNotFound(NotFound):
@@ -23,7 +33,7 @@ class UserNotFound(NotFound):
 
 
 class GameNotFound(NotFound):
-    default_detail = "Game with this game_id was not found in db."
+    default_detail = "Game with this game ID was not found in db."
 
 
 class UserGamesNotFound(NotFound):
@@ -31,4 +41,4 @@ class UserGamesNotFound(NotFound):
 
 
 class TelegramProfileNotFound(NotFound):
-    default_detail = "Telegram profile with this chat_id was not found."
+    default_detail = "Telegram profile with this chat ID was not found."
