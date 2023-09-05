@@ -67,7 +67,7 @@ async def start():
         Command("add_games")
     ),
     dp.message.register(
-        add_games_scenario.user_has_games,
+        sychronise_scenario.user_has_games_in_adding,
         AddGameStates.user_has_games
     )
     dp.message.register(
@@ -85,7 +85,7 @@ async def start():
         Command("synchronise")
     )
     dp.message.register(
-        sychronise_scenario.user_has_no_games,
+        add_games_scenario.user_has_no_games_in_synchronise,
         SynchroniseStates.user_has_no_games
     )
 

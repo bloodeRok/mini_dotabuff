@@ -37,6 +37,7 @@ async def synchronise_games(message: Message, state: FSMContext):
             await message.answer(
                 f"Игры успешно синхронизованы!"
             )
+            await state.clear()
 
         case 404:
             await bot.send_message(
@@ -52,13 +53,14 @@ async def synchronise_games(message: Message, state: FSMContext):
                 "Что-то пошло не так!",
                 reply_markup=to_admin__kb
             )
+            await state.clear()
 
-    await state.clear()
 
 
-async def user_has_no_games(message: Message, state: FSMContext):
+
+async def user_has_games_in_adding(message: Message, state: FSMContext):
     if message.text == "Да":
-        # await start_add_games(message=message, state=state)
+        await synchronise_games(message=message, state=state)
         return
     await bot.send_message(chat_id=message.chat.id, text="Ну ладно...")
     await state.clear()

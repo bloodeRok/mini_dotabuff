@@ -136,9 +136,13 @@ async def print_result(
             await state.clear()
 
 
-async def user_has_games(message: Message, state: FSMContext):
+async def user_has_no_games_in_synchronise(message: Message, state: FSMContext):
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="asdxzfasd"
+    )
     if message.text == "Да":
-        await synchronise_games(message=message, state=state)
+        await start_add_games(message=message, state=state)
         return
     await bot.send_message(chat_id=message.chat.id, text="Ну ладно...")
     await state.clear()
