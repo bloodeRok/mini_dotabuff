@@ -53,7 +53,9 @@ class TelegramProfileRepository:
             min_date = datetime.datetime.fromisoformat(min_date)
             games_stats = games_stats.filter(game__game_date__gte=min_date)
         if max_date:
-            max_date = datetime.datetime.fromisoformat(max_date)
+            max_date = \
+                datetime.datetime.fromisoformat(max_date)\
+                + datetime.timedelta(hours=23, minutes=59)
             games_stats = games_stats.filter(game__game_date__lte=max_date)
 
         if last_days:
