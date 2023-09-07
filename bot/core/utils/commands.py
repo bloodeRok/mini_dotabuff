@@ -32,6 +32,10 @@ async def set_commands(bot: Bot):
             command="photo",
             description="Прислать фото"
         ),
+        BotCommand(
+            command="retrieve_games",
+            description="Вывести игры"
+        ),
     ]
 
     await bot.set_my_commands(

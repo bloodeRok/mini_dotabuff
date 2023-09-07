@@ -10,7 +10,6 @@ from bot.core.keyboards.add_games_keyboards import (
     add_games__from_add_to_synchronise__kb,
 )
 from bot.core.repositories import UserRepository
-from .sychronise_scenario import synchronise_games
 from bot.core.utils.bot_init import bot
 from bot.core.utils.states import AddGameStates
 

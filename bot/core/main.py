@@ -10,11 +10,16 @@ from bot.core.scenarios import (
     get_stats_scenario,
     add_games_scenario,
     basic_scenario,
-    sychronise_scenario
+    sychronise_scenario,
+    retrieve_games_scenario
 )
 from bot.core.utils.bot_init import bot
-from bot.core.utils.states import BindUserStates, AddGameStates, BasicStates, \
-    SynchroniseStates
+from bot.core.utils.states import (
+    BindUserStates,
+    AddGameStates,
+    BasicStates,
+    SynchroniseStates,
+)
 
 
 async def start():
@@ -87,6 +92,12 @@ async def start():
     dp.message.register(
         add_games_scenario.user_has_no_games_in_synchronise,
         SynchroniseStates.user_has_no_games
+    )
+
+    # Retrieve games scenario
+    dp.message.register(
+        retrieve_games_scenario.start_retrieve_games,
+        Command("retrieve_games")
     )
 
     try:
