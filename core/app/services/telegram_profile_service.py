@@ -187,3 +187,30 @@ class TelegramProfileService:
                     game_id=game_id,
                     user=user
                 )
+
+    def filter_games_stats(
+            self,
+            chat_id: int,
+            top: Optional[int] = None,
+            min_date: Optional[str] = None,
+            max_date: Optional[str] = None,
+            last_days: Optional[int] = None,
+            hero: Optional[str] = None,
+            win: Optional[bool] = None,
+    ):
+        """
+        TODO docstring + ->
+        """
+
+        user = self.__get_user_by_chat_id(chat_id=chat_id)
+        player_stats = self.repository.filter_games_stats(
+            user=user,
+            top=top,
+            min_date=min_date,
+            max_date=max_date,
+            last_days=last_days,
+            hero=hero,
+            win=win,
+        )
+
+        return player_stats

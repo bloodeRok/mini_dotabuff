@@ -52,6 +52,13 @@ InvalidGameId = OpenApiExample(
     response_only=True
 )
 
+InvalidQueryParameter = OpenApiExample(
+    name="Invalid query parameter",
+    value={"detail": "Unable to parse parameter '1.5' as int."},
+    status_codes=[406],
+    response_only=True
+)
+
 # ------------ 409 ------------
 
 UserConflict = build_example(
