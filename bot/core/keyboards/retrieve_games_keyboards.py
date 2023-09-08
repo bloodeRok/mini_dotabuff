@@ -85,3 +85,4 @@ def get_invalid_filter_kb(
             filter_name=filter_name
         )
     )
+    return builder.as_markup()

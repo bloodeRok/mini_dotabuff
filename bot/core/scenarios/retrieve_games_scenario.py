@@ -109,4 +109,4 @@ def filter_is_valid(
         if filter_value not in HEROES:
             return False, "Герой должен быть выбран из выпадающей клавиатуры!"
 
-    return True
+    return True, ""
