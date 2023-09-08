@@ -14,11 +14,12 @@ from bot.core.scenarios import (
     retrieve_games_scenario
 )
 from bot.core.utils.bot_init import bot
+from bot.core.utils.callback_data import RetrieveGames
 from bot.core.utils.states import (
     BindUserStates,
     AddGameStates,
     BasicStates,
-    SynchroniseStates,
+    SynchroniseStates, RetrieveGamesStates,
 )
 
 
@@ -99,6 +100,15 @@ async def start():
         retrieve_games_scenario.start_retrieve_games,
         Command("retrieve_games")
     )
+    dp.message.register(
+        retrieve_games_scenario.filter_games,
+        RetrieveGamesStates.filter_games,
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.start_add_filter_by_heroes,
+        RetrieveGames.filter(F.filter_by == "hero"),
+    )
+
 
     try:
         await dp.start_polling(bot)

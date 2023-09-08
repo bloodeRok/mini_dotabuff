@@ -51,22 +51,22 @@ class TelegramProfileRepository:
 
         if min_date:
             min_date = datetime.datetime.fromisoformat(min_date)
-            games_stats = games_stats.filter(game__game_date__gte=min_date)
+            games_stats = games_stats.filter_by(game__game_date__gte=min_date)
         if max_date:
             max_date = \
                 datetime.datetime.fromisoformat(max_date)\
                 + datetime.timedelta(hours=23, minutes=59)
-            games_stats = games_stats.filter(game__game_date__lte=max_date)
+            games_stats = games_stats.filter_by(game__game_date__lte=max_date)
 
         if last_days:
             last_days = \
                 datetime.date.today() - datetime.timedelta(days=last_days)
-            games_stats = games_stats.filter(game__game_date__gte=last_days)
+            games_stats = games_stats.filter_by(game__game_date__gte=last_days)
 
         if hero:
-            games_stats = games_stats.filter(hero=hero)
+            games_stats = games_stats.filter_by(hero=hero)
 
         if win is not None:
-            games_stats = games_stats.filter(win=win)
+            games_stats = games_stats.filter_by(win=win)
 
         return games_stats.order_by("-game__game_date")[:top]

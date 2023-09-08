@@ -2,4 +2,6 @@ from aiogram.fsm.state import StatesGroup, State
 
 
 class RetrieveGamesStates(StatesGroup):
-    retreiving_games = State()
+    filter_games = State()
+    validate_filter = State()
+    retrieving_games = State()
