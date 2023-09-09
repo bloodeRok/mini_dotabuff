@@ -1,11 +1,8 @@
 import datetime
 from typing import Optional
 
-from django.db import IntegrityError
-
-from core.app.api_exceptions import UserConflict
 from core.app.api_exceptions.not_found import UserNotFound
-from core.models import User, Game, TelegramProfile
+from core.models import User, TelegramProfile
 
 
 class UserRepository:

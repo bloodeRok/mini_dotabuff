@@ -1,6 +1,3 @@
-import datetime
-from typing import Optional
-
 from core.app.api_exceptions.not_found import TelegramProfileNotFound
 from core.models import User, TelegramProfile
 
