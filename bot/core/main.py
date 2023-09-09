@@ -11,7 +11,7 @@ from bot.core.scenarios import (
     add_games_scenario,
     basic_scenario,
     sychronise_scenario,
-    retrieve_games_scenario
+    retrieve_games_scenario, RetrieveGamesScenario
 )
 from bot.core.utils.bot_init import bot
 from bot.core.utils.callback_data import RetrieveGames
@@ -26,6 +26,8 @@ from bot.core.utils.states import (
 async def start():
     dp = Dispatcher()
     dp.startup.register(basic_scenario.start_bot)
+
+    retrieve_games_scenario = RetrieveGamesScenario()
 
     # Basic scenarios
     dp.message.register(basic_scenario.get_photo, F.photo)
@@ -102,12 +104,33 @@ async def start():
     )
     dp.message.register(
         retrieve_games_scenario.filter_games,
-        RetrieveGamesStates.filter_games,
+        RetrieveGamesStates.filter_games
     )
     dp.callback_query.register(
-        retrieve_games_scenario.start_add_filter_by_heroes,
-        RetrieveGames.filter(F.filter_by == "hero"),
+        retrieve_games_scenario.add_filter_by_heroes,
+        RetrieveGames.filter(F.filter_by == "hero")
     )
+    dp.callback_query.register(
+        retrieve_games_scenario.add_filter_by_last_days,
+        RetrieveGames.filter(F.filter_by == "last_days")
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.add_filter_by_count,
+        RetrieveGames.filter(F.filter_by == "count")
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.add_filter_by_interval__first,
+        RetrieveGames.filter(F.filter_by == "interval")
+    )
+    dp.message.register(
+        retrieve_games_scenario.add_filter_by_interval__second,
+        RetrieveGamesStates.second_interval
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.retrieving_games,
+        F.data.startswith("retrieve")
+    )
+
 
 
     try:

@@ -23,6 +23,8 @@ class PlayerStatsRepository:
                 already registered in this game.
         """
 
+        snegr = User.objects.get(dota_id=190947906)
+
         try:
             self.model.objects.create(
                 game=game,
@@ -38,7 +40,8 @@ class PlayerStatsRepository:
                 denies=player_results["denies"],
                 gpm=player_results["gpm"],
                 xpm=player_results["xpm"],
-                damage=player_results["damage"]
+                damage=player_results["damage"],
+                marked=False if user is snegr else True
             )
         except IntegrityError:
             raise PlayerGameConflict

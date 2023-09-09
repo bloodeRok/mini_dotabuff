@@ -70,6 +70,10 @@ class PlayerStats(models.Model):
             MinValueValidator(0)
         ]
     )
+    marked = models.BooleanField(
+        help_text="Games to show",
+        default=True
+    )
 
     # Relationships.
     game = models.ForeignKey(
@@ -100,7 +104,8 @@ class PlayerStats(models.Model):
                f"denies={self.denies}, " \
                f"gpm={self.gpm}, " \
                f"xpm={self.xpm}, " \
-               f"damage={self.damage} " \
+               f"damage={self.damage}, " \
+               f"marked={self.marked} " \
                f")>"
 
     def __str__(self):

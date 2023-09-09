@@ -31,7 +31,7 @@ class UserSerializer(serializers.ModelSerializer):
     def get_win_rate(user: User) -> Optional[str]:
         all_stats = user.game_stats.all()
         try:
-            wr = all_stats.filter_by(win=True).count() / all_stats.count()
+            wr = all_stats.filter(win=True).count() / all_stats.count()
             return str(round(wr * 100, 1)) + " %"
         except ZeroDivisionError:
             return None

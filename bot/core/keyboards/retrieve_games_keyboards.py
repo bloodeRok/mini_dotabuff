@@ -61,15 +61,15 @@ def get_filter_kb(
     if "all_games" not in excludes:
         builder.button(
             text="Просто все игры",
-            callback_data="no_filter"
+            callback_data="retrieve"
         )
     if "over_filterring" not in excludes:
         builder.button(
-            text="Это все фильтры, покажи игры",
-            callback_data="no_filter"
+            text="Отправить запрос",
+            callback_data="retrieve"
         )
 
-    builder.adjust(2, 1, 1, 1)
+    builder.adjust(1, 1, 1, 1, 1)
     return builder.as_markup()
 
 

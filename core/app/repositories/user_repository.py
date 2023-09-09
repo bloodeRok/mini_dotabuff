@@ -1,3 +1,6 @@
+import datetime
+from typing import Optional
+
 from django.db import IntegrityError
 
 from core.app.api_exceptions import UserConflict
@@ -53,3 +56,42 @@ class UserRepository:
     def update_name(self, user: User, new_name: str) -> None:
         user.name = new_name
         self.__store(user=user)
+
+    @staticmethod
+    def filter_games_stats(
+            user: User,
+            top: Optional[int] = None,
+            min_date: Optional[str] = None,
+            max_date: Optional[str] = None,
+            last_days: Optional[int] = None,
+            hero: Optional[str] = None,
+            win: Optional[bool] = None,
+    ):
+        """
+        TODO docstring + ->
+        TODO prefetch_related
+        """
+
+        games_stats = user.game_stats.filter(marked=True)
+
+        if min_date:
+            min_date = datetime.datetime.fromisoformat(min_date)
+            games_stats = games_stats.filter(game__game_date__gte=min_date)
+        if max_date:
+            max_date = \
+                datetime.datetime.fromisoformat(max_date)\
+                + datetime.timedelta(hours=23, minutes=59)
+            games_stats = games_stats.filter(game__game_date__lte=max_date)
+
+        if last_days:
+            last_days = \
+                datetime.date.today() - datetime.timedelta(days=last_days)
+            games_stats = games_stats.filter(game__game_date__gte=last_days)
+
+        if hero:
+            games_stats = games_stats.filter(hero=hero)
+
+        if win is not None:
+            games_stats = games_stats.filter(win=win)
+
+        return games_stats.order_by("-game__game_date")[:top]
