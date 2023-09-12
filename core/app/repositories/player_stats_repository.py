@@ -27,9 +27,8 @@ class PlayerStatsRepository:
             self.model.objects.create(
                 game=game,
                 player=user,
-                nickname=player_results["nickname"],
                 win=player_results["win"],
-                hero=player_results["hero"].name,
+                hero=player_results["hero"],
                 kills=player_results["kills"],
                 deaths=player_results["deaths"],
                 assists=player_results["assists"],
@@ -38,7 +37,7 @@ class PlayerStatsRepository:
                 denies=player_results["denies"],
                 gpm=player_results["gpm"],
                 xpm=player_results["xpm"],
-                damage=player_results["damage"]
+                damage=player_results["damage"],
             )
         except IntegrityError:
             raise PlayerGameConflict

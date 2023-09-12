@@ -10,16 +10,24 @@ from bot.core.scenarios import (
     get_stats_scenario,
     add_games_scenario,
     basic_scenario,
-    sychronise_scenario
+    sychronise_scenario,
+    retrieve_games_scenario, RetrieveGamesScenario
 )
 from bot.core.utils.bot_init import bot
-from bot.core.utils.states import BindUserStates, AddGameStates, BasicStates, \
-    SynchroniseStates
+from bot.core.utils.callback_data import RetrieveGames
+from bot.core.utils.states import (
+    BindUserStates,
+    AddGameStates,
+    BasicStates,
+    SynchroniseStates, RetrieveGamesStates,
+)
 
 
 async def start():
     dp = Dispatcher()
     dp.startup.register(basic_scenario.start_bot)
+
+    retrieve_games_scenario = RetrieveGamesScenario()
 
     # Basic scenarios
     dp.message.register(basic_scenario.get_photo, F.photo)
@@ -87,6 +95,44 @@ async def start():
     dp.message.register(
         add_games_scenario.user_has_no_games_in_synchronise,
         SynchroniseStates.user_has_no_games
+    )
+
+    # Retrieve games scenario
+    dp.message.register(
+        retrieve_games_scenario.start_retrieve_games,
+        Command("retrieve_games")
+    )
+    dp.message.register(
+        retrieve_games_scenario.filter_games,
+        RetrieveGamesStates.filter_games
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.add_filter_by_heroes,
+        RetrieveGames.filter(F.filter_by == "hero")
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.add_filter_by_last_days,
+        RetrieveGames.filter(F.filter_by == "last_days")
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.add_filter_by_count,
+        RetrieveGames.filter(F.filter_by == "top")
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.add_filter_by_interval__first,
+        RetrieveGames.filter(F.filter_by == "interval")
+    )
+    dp.message.register(
+        retrieve_games_scenario.add_filter_by_interval__second,
+        RetrieveGamesStates.second_interval
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.retrieving_games,
+        RetrieveGames.filter(F.filter_by == "over_filterring")
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.retrieving_games,
+        RetrieveGames.filter(F.filter_by == "all_games")
     )
 
     try:

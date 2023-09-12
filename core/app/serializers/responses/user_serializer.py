@@ -24,7 +24,7 @@ class UserSerializer(serializers.ModelSerializer):
         help_text="User's average experience per minute."
     )
     avg_kda = serializers.SerializerMethodField(
-        help_text="User's average kills/deaths/assists."
+        help_text="User's average kills/deaths/assists stats."
     )
 
     @staticmethod

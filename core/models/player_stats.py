@@ -5,16 +5,8 @@ from core.constants.field_restrictions import NAME_MAX_LENGTH
 
 
 class PlayerStats(models.Model):
-    nickname = models.CharField(
-        help_text="Nickname of the player in this game.",
-        max_length=NAME_MAX_LENGTH
-    )
     win = models.BooleanField(
         help_text="Is player won the game."
-    )
-    hero = models.CharField(
-        help_text="The hero the player played on.",
-        max_length=NAME_MAX_LENGTH
     )
     kills = models.IntegerField(
         help_text="The number of kills made by the player.",
@@ -70,8 +62,17 @@ class PlayerStats(models.Model):
             MinValueValidator(0)
         ]
     )
+    marked = models.BooleanField(
+        help_text="Games to show",
+        default=True
+    )
 
     # Relationships.
+    hero = models.ForeignKey(
+        to="Hero",
+        help_text="The hero the player played on.",
+        on_delete=models.PROTECT
+    )
     game = models.ForeignKey(
         "Game",
         on_delete=models.PROTECT,
@@ -89,9 +90,9 @@ class PlayerStats(models.Model):
     def __repr__(self):
         return f"<Game(" \
                f"pk={self.pk}, " \
-               f"nickname={self.nickname}, " \
+               f"nickname={self.player.name}, " \
                f"win={self.win}, " \
-               f"hero={self.hero}, " \
+               f"hero={self.hero.name}, " \
                f"kills={self.kills}, " \
                f"deaths={self.deaths}, " \
                f"assists={self.assists}, " \
@@ -100,7 +101,8 @@ class PlayerStats(models.Model):
                f"denies={self.denies}, " \
                f"gpm={self.gpm}, " \
                f"xpm={self.xpm}, " \
-               f"damage={self.damage} " \
+               f"damage={self.damage}, " \
+               f"marked={self.marked} " \
                f")>"
 
     def __str__(self):

@@ -8,6 +8,7 @@ class TelegramProfile(models.Model):
         help_text="Chat ID of the user.",
         unique=True
     )
+    
 
     #  Relationships.
     user = models.ForeignKey(

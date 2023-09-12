@@ -7,7 +7,9 @@ from core.app.handlers.schema_extensions import api_examples
 from core.app.serializers.responses import (
     APIErrorSerializer,
     GameSerializer,
-    UserSerializer, TelegramProfileSerializer,
+    UserSerializer,
+    TelegramProfileSerializer,
+    PlayerGameSerializer,
 )
 
 
@@ -21,6 +23,12 @@ class APIResponse:
         return OpenApiResponse(
             response=self.serializer,
             description=f"Requested {self.entity_name} data."
+        )
+
+    def list(self) -> OpenApiResponse:
+        return OpenApiResponse(
+            response=self.serializer(many=True),
+            description=f"Requested {self.plural_entity_name} data."
         )
 
     def created(self) -> OpenApiResponse:
@@ -68,12 +76,27 @@ class APIResponse:
             examples=examples
         )
 
+    @staticmethod
+    def invalid_query_parameters() -> OpenApiResponse:
+        return OpenApiResponse(
+            response=APIErrorSerializer,
+            description="Query parameters are invalid.",
+            examples=[api_examples.InvalidQueryParameter]
+        )
+
 
 class UserResponse(APIResponse):
     serializer = UserSerializer
     entity_name = "user"
     title_entity_name = "User"
     plural_entity_name = "users"
+
+
+class PlayerGameResponse(APIResponse):
+    serializer = PlayerGameSerializer
+    entity_name = "player game"
+    title_entity_name = "Player game"
+    plural_entity_name = "player games"
 
 
 class GameResponse(APIResponse):

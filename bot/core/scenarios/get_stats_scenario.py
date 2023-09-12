@@ -5,7 +5,7 @@ from bot.core.repositories import UserRepository
 
 async def get_stats(message: Message):
     res = await UserRepository().get_stats(chat_id=message.chat.id)
-    await message.reply(
+    await message.answer(
         f"name : {res.get('name')}\n"
         f"matches_recorded : {res.get('matches_recorded')}\n"
         f"win_rate : {res.get('win_rate')}\n"

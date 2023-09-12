@@ -56,8 +56,6 @@ async def synchronise_games(message: Message, state: FSMContext):
             await state.clear()
 
 
-
-
 async def user_has_games_in_adding(message: Message, state: FSMContext):
     if message.text == "Да":
         await synchronise_games(message=message, state=state)

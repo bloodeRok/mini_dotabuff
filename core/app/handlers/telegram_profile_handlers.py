@@ -5,13 +5,27 @@ from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from .helpers.query_parameters_helper import (
+    TopQueryParameter,
+    MinDateQueryParameter,
+    MaxDateQueryParameter,
+    LastDaysQueryParameter,
+    HeroQueryParameter,
+    WinQueryParameter, parse_query_parameter
+)
+
 from core.app.handlers.schema_extensions import api_examples
 from core.app.handlers.schema_extensions.api_responses import (
-    TelegramProfileResponse, UserResponse, APIResponse,
+    TelegramProfileResponse,
+    UserResponse,
+    APIResponse, PlayerGameResponse,
+
 )
-from core.app.serializers.requests import TelegramProfileCreateRequest, \
-    GamesAddRequest
-from core.app.serializers.responses import UserSerializer
+from core.app.serializers.requests import (
+    TelegramProfileCreateRequest,
+    GamesAddRequest,
+)
+from core.app.serializers.responses import UserSerializer, PlayerGameSerializer
 from core.app.services import TelegramProfileService, UserService
 
 
@@ -109,7 +123,27 @@ def tgprofile_games_synchronise(
     )
     return HttpResponse("Success", status=status.HTTP_201_CREATED)
 
+
 @extend_schema_view(
+    get=extend_schema(
+        tags=["telegram profiles", "games"],
+        operation_id="Retrieve Games",
+        description="Retrieve Games filtered by supplied parameters.\n\n"
+                    "By default returns all Games sorted by their date.",
+        parameters=[
+            TopQueryParameter,
+            MinDateQueryParameter,
+            MaxDateQueryParameter,
+            LastDaysQueryParameter,
+            HeroQueryParameter,
+            WinQueryParameter,
+        ],
+        responses={
+            200: PlayerGameResponse().list(),
+            406: APIResponse.invalid_query_parameters(),
+        }
+    ),
+
     post=extend_schema(
         tags=["telegram profiles", "games"],
         operation_id="Adds All Games",
@@ -138,17 +172,42 @@ def tgprofile_games_synchronise(
         }
     )
 )
-@api_view(["POST"])
+@api_view(["GET", "POST"])
 def tgprofile_games(
         request: Request,
         chat_id: int
 ) -> HttpResponse:
-    data = GamesAddRequest(data=request.data)
-    data.is_valid(raise_exception=True)
-    data = data.validated_data
+    match request.method:
+        case "GET":
+            top = parse_query_parameter(request, TopQueryParameter)
+            min_date = parse_query_parameter(request, MinDateQueryParameter)
+            max_date = parse_query_parameter(request, MaxDateQueryParameter)
+            last_days = parse_query_parameter(request, LastDaysQueryParameter)
+            hero = parse_query_parameter(request, HeroQueryParameter)
+            win = parse_query_parameter(request, WinQueryParameter)
 
-    TelegramProfileService().add_games(
-        chat_id=chat_id,
-        count=data["count"]
-    )
-    return HttpResponse("Success", status=status.HTTP_201_CREATED)
+            player_stats = TelegramProfileService().filter_games_stats(
+                chat_id=chat_id,
+                top=top,
+                min_date=min_date,
+                max_date=max_date,
+                last_days=last_days,
+                hero=hero,
+                win=win,
+            )
+
+            return JsonResponse(
+                PlayerGameSerializer(player_stats, many=True).data,
+                safe=False
+            )
+
+        case "POST":
+            data = GamesAddRequest(data=request.data)
+            data.is_valid(raise_exception=True)
+            data = data.validated_data
+
+            TelegramProfileService().add_games(
+                chat_id=chat_id,
+                count=data["count"]
+            )
+            return HttpResponse("Success", status=status.HTTP_201_CREATED)
