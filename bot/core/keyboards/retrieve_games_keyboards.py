@@ -1,88 +1,80 @@
+from enum import Enum
+from typing import Optional
+
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.core.constants.bot_constants import HEROES
 from bot.core.utils.callback_data import RetrieveGames
 
-retrieve_games__all_heroes__buttons = [
-    [
-        KeyboardButton(
-            text=hero
+from .helpers.enums import RetrieveGamesButtons
+
+
+class RetrieveGamesKeyboards:
+
+    @staticmethod
+    def __button_builder(
+            builder: InlineKeyboardBuilder,
+            filter_enum: Optional[Enum] = None
+    ) -> None:
+        """
+        TODO docstring
+        """
+
+        builder.button(
+            text=filter_enum.value.capitalize(),
+            callback_data=RetrieveGames(
+                filter_by=filter_enum.name,
+                filter_name=filter_enum.value
+            )
         )
+
+    # heroes buttons
+    retrieve_games__all_heroes__buttons = [
+        [
+            KeyboardButton(
+                text=hero
+            )
+        ]
+        for hero in HEROES
     ]
-    for hero in HEROES
-]
 
-retrieve_games__all_heroes__kb = ReplyKeyboardMarkup(
-    keyboard=retrieve_games__all_heroes__buttons,
-    resize_keyboard=True,
-    one_time_keyboard=True
-)
-
-
-# filter buttons
-def get_filter_kb(
-        excludes: list[str] = None
-):
-    builder = InlineKeyboardBuilder()
-    if "last_days" not in excludes:
-        builder.button(
-            text="За последние дни",
-            callback_data=RetrieveGames(
-                filter_by="last_days",
-                filter_name="по последним дням"
-            )
-        )
-
-    if "hero" not in excludes:
-        builder.button(
-            text="По герою",
-            callback_data=RetrieveGames(
-                filter_by="hero",
-                filter_name="по герою"
-            )
-        )
-    if "count" not in excludes:
-        builder.button(
-            text="По количеству",
-            callback_data=RetrieveGames(
-                filter_by="count",
-                filter_name="по количеству"
-            )
-        )
-    if "interval" not in excludes:
-        builder.button(
-            text="Интервал дат (от ... до)",
-            callback_data=RetrieveGames(
-                filter_by="interval",
-                filter_name="по интервалу дат"
-            )
-        )
-    if "all_games" not in excludes:
-        builder.button(
-            text="Просто все игры",
-            callback_data="retrieve"
-        )
-    if "over_filterring" not in excludes:
-        builder.button(
-            text="Отправить запрос",
-            callback_data="retrieve"
-        )
-
-    builder.adjust(1, 1, 1, 1, 1)
-    return builder.as_markup()
-
-
-def get_invalid_filter_kb(
-        filter_by: str,
-        filter_name: str
-):
-    builder = InlineKeyboardBuilder()
-    builder.button(
-        text="Ввести ещё раз",
-        callback_data=RetrieveGames(
-            filter_by=filter_by,
-            filter_name=filter_name
-        )
+    retrieve_games__all_heroes__kb = ReplyKeyboardMarkup(
+        keyboard=retrieve_games__all_heroes__buttons,
+        resize_keyboard=True,
+        one_time_keyboard=True
     )
-    return builder.as_markup()
+
+    # filter buttons
+    def get_filter_kb(
+            self,
+            excludes: list[str] = None
+    ):
+        builder = InlineKeyboardBuilder()
+
+        enum_buttons = [enum for enum in RetrieveGamesButtons]
+
+        for enum_button in enum_buttons:
+            if enum_button.name not in excludes:
+                self.__button_builder(
+                    builder=builder,
+                    filter_enum=enum_button
+                )
+
+        builder.adjust(*[1] * len(enum_buttons))
+        return builder.as_markup()
+
+    @staticmethod
+    def get_invalid_filter_kb(
+            filter_by: str,
+            filter_name: str
+    ):
+        builder = InlineKeyboardBuilder()
+        builder.button(
+            text="Ввести ещё раз",
+            callback_data=RetrieveGames(
+                filter_by=filter_by,
+                filter_name=filter_name
+            )
+        )
+        return builder.as_markup()

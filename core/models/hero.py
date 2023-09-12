@@ -5,13 +5,14 @@ from core.constants.field_restrictions import NAME_MAX_LENGTH
 
 class Hero(models.Model):
     name = models.CharField(
-        help_text="Name of the user.",
+        help_text="Name of the hero.",
         max_length=NAME_MAX_LENGTH,
         unique=True
     )
     hero_id = models.IntegerField(
         help_text="ID of the hero on Open Dota.",
-        unique=True
+        unique=True,
+        db_index=True
     )
 
     def __repr__(self):

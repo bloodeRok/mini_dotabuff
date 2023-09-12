@@ -75,6 +75,4 @@ class UserRepository:
             url += filters
         async with aiohttp.ClientSession() as session:
             async with session.get(url=url) as response:
-                json = await response.json()
                 return response.status, await response.json()
-

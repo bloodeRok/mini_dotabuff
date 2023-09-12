@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 from core.app.api_exceptions.not_found import UserNotFound
-from core.models import User, TelegramProfile
+from core.models import User, TelegramProfile, Hero
 
 
 class UserRepository:
@@ -86,7 +86,7 @@ class UserRepository:
             games_stats = games_stats.filter(game__game_date__gte=last_days)
 
         if hero:
-            games_stats = games_stats.filter(hero=hero)
+            games_stats = games_stats.filter(hero=Hero.objects.get(name=hero))
 
         if win is not None:
             games_stats = games_stats.filter(win=win)

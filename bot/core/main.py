@@ -116,7 +116,7 @@ async def start():
     )
     dp.callback_query.register(
         retrieve_games_scenario.add_filter_by_count,
-        RetrieveGames.filter(F.filter_by == "count")
+        RetrieveGames.filter(F.filter_by == "top")
     )
     dp.callback_query.register(
         retrieve_games_scenario.add_filter_by_interval__first,
@@ -128,10 +128,12 @@ async def start():
     )
     dp.callback_query.register(
         retrieve_games_scenario.retrieving_games,
-        F.data.startswith("retrieve")
+        RetrieveGames.filter(F.filter_by == "over_filterring")
     )
-
-
+    dp.callback_query.register(
+        retrieve_games_scenario.retrieving_games,
+        RetrieveGames.filter(F.filter_by == "all_games")
+    )
 
     try:
         await dp.start_polling(bot)

@@ -53,6 +53,11 @@ def parse_query_parameter(
         return None
 
     try:
+        if parameter.type == bool:
+            query_parameter = query_parameter.upper()
+            if query_parameter not in ["TRUE", "FALSE"]:
+                raise ValueError
+            return True if query_parameter == "TRUE" else False
         serialized = parameter.type(query_parameter)
     except ValueError:
         raise NotAcceptable(

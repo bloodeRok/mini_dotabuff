@@ -1,13 +1,13 @@
 from rest_framework import serializers
 
-from core.models import PlayerStats
+from core.models import PlayerStats, Hero
 
 
 class ShortPlayerStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = PlayerStats
         fields = [
-            "nickname",
+            "nickname",  # TODO
             "hero",
         ]
 
@@ -30,6 +30,10 @@ class FullPlayerStatsSerializer(ShortPlayerStatsSerializer):
 
 
 class PlayerGameSerializer(serializers.ModelSerializer):
+    hero = serializers.CharField(
+        help_text=Hero._meta.get_field("name").help_text,
+        source="hero.name"
+    )
     game_date = serializers.DateTimeField(
         help_text="Date and time when the game was played.",
         source="game.game_date"

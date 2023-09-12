@@ -203,7 +203,7 @@ class TelegramProfileService:
         """
 
         user = self.__get_user_by_chat_id(chat_id=chat_id)
-        player_stats = self.repository.filter_games_stats(
+        player_stats = UserRepository().filter_games_stats(
             user=user,
             top=top,
             min_date=min_date,
