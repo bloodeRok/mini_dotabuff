@@ -4,6 +4,11 @@ from core.models import PlayerStats, Hero
 
 
 class ShortPlayerStatsSerializer(serializers.ModelSerializer):
+    nickname = serializers.CharField(
+        help_text="Nickname of the player.",
+        source="user.name"
+    )
+
     class Meta:
         model = PlayerStats
         fields = [
