@@ -6,3 +6,4 @@ GET_USER_URL = CORE_URL + "/telegram-profiles/{chat_id}/user/"
 SYNCHRONISE_GAMES_URL = CORE_URL \
                         + "/telegram-profiles/{chat_id}/games/synchronise/"
 RETRIEVE_GAMES_URL = CORE_URL + "/telegram-profiles/{chat_id}/games/"
+RETRIEVE_HEROES_URL = CORE_URL + "/heroes/"

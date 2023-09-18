@@ -8,7 +8,7 @@ from core.app.repositories import (
     TelegramProfileRepository,
     GameRepository,
 )
-from core.app.repositories.player_stats_repository import PlayerStatsRepository
+from core.app.repositories import PlayerStatsRepository
 from core.app.services.helpers.open_dota_connection import (
     GameData,
     PlayerData,

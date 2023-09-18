@@ -10,6 +10,7 @@ urlpatterns = [
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
-     path("games/", include("core.urls.game_urls")),
+    path("games/", include("core.urls.game_urls")),
     path("telegram-profiles/", include("core.urls.telegram_profile_urls")),
+    path("heroes/", include("core.urls.hero_urls")),
 ]

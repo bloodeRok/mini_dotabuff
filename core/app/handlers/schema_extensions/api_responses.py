@@ -9,7 +9,7 @@ from core.app.serializers.responses import (
     GameSerializer,
     UserSerializer,
     TelegramProfileSerializer,
-    PlayerGameSerializer,
+    PlayerGameSerializer, HeroSerializer,
 )
 
 
@@ -111,3 +111,10 @@ class TelegramProfileResponse(APIResponse):
     entity_name = "telegram profile"
     title_entity_name = "Telegram profile"
     plural_entity_name = "telegram profiles"
+
+
+class HeroResponse(APIResponse):
+    serializer = HeroSerializer
+    entity_name = "hero"
+    title_entity_name = "Hero"
+    plural_entity_name = "heroes"
