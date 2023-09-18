@@ -3,7 +3,7 @@ from typing import Optional
 from django.db.models import Count, Avg
 from rest_framework import serializers
 
-from core.models import User
+from core.models import User, Hero
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -39,9 +39,10 @@ class UserSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_favorite_hero(user: User) -> Optional[str]:
         if user.game_stats.count() > 0:
-            return user.game_stats. \
+            hero_id = user.game_stats. \
                 values("hero").annotate(total=Count('id')). \
                 order_by("-total").first()["hero"]
+            return Hero.objects.get(id=hero_id).name
         return None
 
     @staticmethod

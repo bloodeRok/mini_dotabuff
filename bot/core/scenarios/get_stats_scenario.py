@@ -6,11 +6,12 @@ from bot.core.repositories import UserRepository
 async def get_stats(message: Message):
     res = await UserRepository().get_stats(chat_id=message.chat.id)
     await message.answer(
-        f"name : {res.get('name')}\n"
-        f"matches_recorded : {res.get('matches_recorded')}\n"
-        f"win_rate : {res.get('win_rate')}\n"
-        f"favorite_hero : {res.get('favorite_hero')}\n"
-        f"avg_gpm : {res.get('avg_gpm')}\n"
-        f"avg_xpm : {res.get('avg_xpm')}\n"
-        f"avg_kda : {res.get('avg_kda')}\n"
+        f"Ник в доте : {res.get('name')}\n"
+        f"Записанных матчей : {res.get('matches_recorded')}\n"
+        f"Процент побед : {res.get('win_rate')}\n"
+        f"Любимый герой : {res.get('favorite_hero')}\n"
+        f"\nСредние показатели: \n"
+        f"Золота в минуту : {res.get('avg_gpm')}\n"
+        f"Опыта в минуту : {res.get('avg_xpm')}\n"
+        f"KDA : {res.get('avg_kda')}\n"
     )
