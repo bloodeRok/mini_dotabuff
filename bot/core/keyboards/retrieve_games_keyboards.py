@@ -1,12 +1,9 @@
 from enum import Enum
 from typing import Optional
 
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
-from bot.core.constants.bot_constants import HEROES
 from bot.core.utils.callback_data import RetrieveGames
-
 from .helpers.enums import RetrieveGamesButtons
 
 
