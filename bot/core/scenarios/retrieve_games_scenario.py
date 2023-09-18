@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery
 from bot.core.constants.bot_constants import HEROES
 from bot.core.constants.messages import START_RETRIEVE_GAMES_MESSAGE
 from bot.core.keyboards import RetrieveGamesKeyboards, to_admin__kb
-from bot.core.repositories import UserRepository
+from bot.core.repositories import UserRepository, HeroRepository
 from bot.core.scenarios.helpers.validators import date_is_valid
 from bot.core.utils.bot_init import bot
 from bot.core.utils.callback_data import RetrieveGames
@@ -155,10 +155,12 @@ class RetrieveGamesScenario:
             }
         )
 
+        heroes = await HeroRepository.get_heroes()
+
         await bot.send_message(
             chat_id=call.message.chat.id,
             text="Выбери героя, которого ты хочешь видеть в выборке игр",
-            reply_markup=RetrieveGamesKeyboards().retrieve_games__all_heroes__kb
+            reply_markup=RetrieveGamesKeyboards().get_hero_kb(heroes=heroes)
             # TODO from db
         )
 

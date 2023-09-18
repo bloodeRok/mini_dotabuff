@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional
 
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
 from bot.core.constants.bot_constants import HEROES
 from bot.core.utils.callback_data import RetrieveGames
@@ -13,7 +13,7 @@ from .helpers.enums import RetrieveGamesButtons
 class RetrieveGamesKeyboards:
 
     @staticmethod
-    def __button_builder(
+    def __filter_button_builder(
             builder: InlineKeyboardBuilder,
             filter_enum: Optional[Enum] = None
     ) -> None:
@@ -30,20 +30,15 @@ class RetrieveGamesKeyboards:
         )
 
     # heroes buttons
-    retrieve_games__all_heroes__buttons = [
-        [
-            KeyboardButton(
-                text=hero
-            )
-        ]
-        for hero in HEROES
-    ]
+    @staticmethod
+    def get_hero_kb(heroes: list[str] = None):
+        builder = ReplyKeyboardBuilder()
 
-    retrieve_games__all_heroes__kb = ReplyKeyboardMarkup(
-        keyboard=retrieve_games__all_heroes__buttons,
-        resize_keyboard=True,
-        one_time_keyboard=True
-    )
+        for hero in heroes:
+            builder.button(text=hero)
+
+        builder.adjust(*[1] * len(heroes))
+        return builder.as_markup()
 
     # filter buttons
     def get_filter_kb(
@@ -56,7 +51,7 @@ class RetrieveGamesKeyboards:
 
         for enum_button in enum_buttons:
             if enum_button.name not in excludes:
-                self.__button_builder(
+                self.__filter_button_builder(
                     builder=builder,
                     filter_enum=enum_button
                 )
