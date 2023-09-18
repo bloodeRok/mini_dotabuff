@@ -1,5 +1,6 @@
 from .api_error_serializer import APIErrorSerializer
 from .game_serializer import GameSerializer
+from .hero_serializer import HeroSerializer
 from .player_stats_serializer import (
     ShortPlayerStatsSerializer,
     FullPlayerStatsSerializer,
