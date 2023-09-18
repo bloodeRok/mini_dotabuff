@@ -139,7 +139,7 @@ class TelegramProfileService:
 
         user = self.__get_user_by_chat_id(chat_id=chat_id)
 
-        last_game = user.games.last()
+        last_game = user.game_stats.last().game
         if last_game is None:
             raise UserGamesNotFound
 
