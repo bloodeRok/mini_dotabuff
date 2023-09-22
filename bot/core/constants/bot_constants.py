@@ -16,3 +16,4 @@ DOTA_CLIENT_WINDOW_PHOTO_PATH = os.path.join(
     PICTURES_PATH,
     "dota_client_window.jpg"
 )
+ADMIN_ACCOUNT = 190947906

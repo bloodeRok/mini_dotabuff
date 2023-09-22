@@ -2,6 +2,7 @@ from typing import Any
 
 from django.db import IntegrityError
 
+from bot.core.constants.bot_constants import ADMIN_ACCOUNT
 from core.app.api_exceptions.conflict import PlayerGameConflict
 from core.models import PlayerStats, Game, User
 
@@ -38,6 +39,7 @@ class PlayerStatsRepository:
                 gpm=player_results["gpm"],
                 xpm=player_results["xpm"],
                 damage=player_results["damage"],
+                marked=False if user.dota_id == ADMIN_ACCOUNT else True
             )
         except IntegrityError:
             raise PlayerGameConflict
