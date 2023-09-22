@@ -1,3 +1,6 @@
+from math import ceil
+from typing import Any
+
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
@@ -65,8 +68,27 @@ class RetrieveGamesScenario:
 
         return f"{filter_name}={filter_value}"
 
+    async def __get_games(self, chat_id: int, filters_dict: dict[str, Any]):
+
+        filters_str = None
+
+        if filters_dict:
+            filters_str = "?"
+            for filter_name, filter_value in filters_dict.items():
+                filters_str += self.__get_filter_str(
+                    filter_name=filter_name,
+                    filter_value=filter_value["value"]
+                ) + "&"
+
+            filters_str = filters_str[:-1]
+
+        return await UserRepository().retrieve_games(
+            chat_id=chat_id,
+            filters=filters_str
+        )
+
     @staticmethod
-    def __get_game_answer(
+    def __get_game_str(
             count: int,
             win: str,
             hero: str,
@@ -80,6 +102,32 @@ class RetrieveGamesScenario:
                  f"Дата игры: {game_date.replace('T', ' ')}\n" \
                  f"Длительность игры: {game_duration}\n" \
                  f"KDA: {kda}\n"
+
+    async def __get_games_answer(
+            self,
+            games: list[dict[str, str | bool]]
+    ) -> dict[int, str]:
+
+        games_dict = {}
+        for game_number in range(ceil(len(games) / 20)):
+            games_dict[game_number + 1] = \
+                games[game_number * 20: (game_number + 1) * 20]
+        for page in games_dict:
+            page_games = ""
+            count = (page - 1) * 20
+            for game in games_dict[page]:
+                count += 1
+                page_games += self.__get_game_str(
+                    count=count,
+                    win="Победа\n" if game["win"] else "Поражение\n",
+                    hero=game["hero"],
+                    game_date=game['game_date'][:-1].replace("T", " "),
+                    game_duration=game["game_duration"][:-1],
+                    kda=game["KDA"]
+                )
+            games_dict[page] = page_games + f"\nТекущая страница: " \
+                                            f"{page} из {len(games_dict)}"
+        return games_dict
 
     @staticmethod
     async def start_retrieve_games(message: Message):
@@ -162,7 +210,6 @@ class RetrieveGamesScenario:
             chat_id=call.message.chat.id,
             text="Выбери героя, которого ты хочешь видеть в выборке игр",
             reply_markup=RetrieveGamesKeyboards().get_hero_kb(heroes=heroes)
-            # TODO from db
         )
 
         await state.set_state(RetrieveGamesStates.filter_games)
@@ -268,44 +315,35 @@ class RetrieveGamesScenario:
     ):
 
         chat_id = call.message.chat.id
-
         data = await state.get_data()
-        filters_str = None
-
-        filters_dict = data.get("filters")
-        if filters_dict:
-            filters_str = "?"
-            for filter_name, filter_value in filters_dict.items():
-                filters_str += self.__get_filter_str(
-                    filter_name=filter_name,
-                    filter_value=filter_value["value"]
-                ) + "&"
-
-            filters_str = filters_str[:-1]
-
-        res_code, json = await UserRepository().retrieve_games(
+        res_code, json = await self.__get_games(
             chat_id=chat_id,
-            filters=filters_str
+            filters_dict=data.get("filters")
         )
 
         match res_code:
             case 200:
-                answer = ""
-                count = 0
-                for game in json:
-                    count += 1
-                    answer += self.__get_game_answer(
-                        count=count,
-                        win="Победа\n" if game["win"] else "Поражение\n",
-                        hero=game["hero"],
-                        game_date=game['game_date'][:-1].replace("T", " "),
-                        game_duration=game["game_duration"][:-1],
-                        kda=game["KDA"]
+                if not json:
+                    await bot.send_message(
+                        chat_id=chat_id,
+                        text="Я не нашёл игр с таким фильтром :("
                     )
+                    await call.answer()
+                    await state.clear()
+                    return
+
+                games_dict = await self.__get_games_answer(games=json)
+                if len(games_dict) > 1:
+                    await state.update_data(
+                        current_page=1,
+                        games_dict=games_dict
+                    )
+                    await self.paginating_games(chat_id=chat_id, state=state)
+                    return
+
                 await bot.send_message(
                     chat_id=chat_id,
-                    text=answer if answer
-                    else "Я не нашёл игры с таким фильтром :("
+                    text=games_dict[1]
                 )
 
             case 404:
@@ -318,5 +356,51 @@ class RetrieveGamesScenario:
                 )
 
         await call.answer()
-
         await state.clear()
+
+    @staticmethod
+    async def paginating_games(state: FSMContext, chat_id: int):
+        data = await state.get_data()
+        current_page = data["current_page"]
+        games_dict = data["games_dict"]
+
+        await bot.send_message(
+            chat_id=chat_id,
+            text=games_dict[current_page],
+            reply_markup=RetrieveGamesKeyboards.get_paginate_kb(
+                games=games_dict,
+                page=current_page
+            )
+        )
+
+    async def adding_page(
+            self,
+            call: CallbackQuery,
+            state: FSMContext
+    ):
+        data = await state.get_data()
+        await state.update_data(current_page=data["current_page"] + 1)
+        await call.answer()
+        await self.paginating_games(chat_id=call.message.chat.id, state=state)
+
+    async def subtraction_page(
+            self,
+            call: CallbackQuery,
+            state: FSMContext
+    ):
+        data = await state.get_data()
+        await state.update_data(current_page=data["current_page"] - 1)
+        await call.answer()
+        await self.paginating_games(chat_id=call.message.chat.id, state=state)
+
+    @staticmethod
+    async def close_retrieving(
+            call: CallbackQuery,
+            state: FSMContext
+    ):
+        await bot.send_message(
+            chat_id=call.message.chat.id,
+            text="Ну хорошо"
+        )
+        await state.clear()
+        await call.answer()

@@ -139,6 +139,22 @@ async def start():
         retrieve_games_scenario.retrieving_games,
         RetrieveGames.filter(F.filter_by == "all_games")
     )
+    dp.callback_query.register(
+        retrieve_games_scenario.paginating_games,
+        RetrieveGamesStates.paginating_games
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.adding_page,
+        F.data.startswith("adding_page"),
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.subtraction_page,
+        F.data.startswith("subtraction_page"),
+    )
+    dp.callback_query.register(
+        retrieve_games_scenario.close_retrieving,
+        F.data.startswith("close_retrieving"),
+    )
 
     try:
         await dp.start_polling(bot)
