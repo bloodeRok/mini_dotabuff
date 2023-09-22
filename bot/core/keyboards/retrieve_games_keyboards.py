@@ -81,11 +81,16 @@ class RetrieveGamesKeyboards:
         if page > 1:
             builder.button(
                 text="Пред. стр",
-                callback_data="retrieve_games_pagination"
+                callback_data="subtraction_page"
             )
         if page < list(games.keys())[-1]:
             builder.button(
                 text="След. стр",
-                callback_data="retrieve_games_pagination"
+                callback_data="adding_page"
             )
-        builder.adjust(2)
+        builder.button(
+            text="Я насмотрелся",
+            callback_data="close_retrieving"
+        )
+        builder.adjust(2, 1)
+        return builder.as_markup()

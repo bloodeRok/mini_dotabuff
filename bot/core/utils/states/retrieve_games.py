@@ -6,3 +6,4 @@ class RetrieveGamesStates(StatesGroup):
     filter_games = State()
     validate_filter = State()
     retrieving_games = State()
+    paginating_games = State()
