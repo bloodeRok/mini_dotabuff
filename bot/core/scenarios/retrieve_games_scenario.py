@@ -75,11 +75,32 @@ class RetrieveGamesScenario:
             kda: str
     ) -> str:
         return f"\n-------------Игра №{count}-------------\n" \
-               + win \
-               + f"Герой: {hero}\n" \
-                 f"Дата игры: {game_date.replace('T', ' ')}\n" \
-                 f"Длительность игры: {game_duration}\n" \
-                 f"KDA: {kda}\n"
+            + win \
+            + f"Герой: {hero}\n" \
+              f"Дата игры: {game_date.replace('T', ' ')}\n" \
+              f"Длительность игры: {game_duration}\n" \
+              f"KDA: {kda}\n"
+
+    def __get_games_answer(
+            self,
+            games: list[dict[str, str | bool]],
+            page: int
+    ) -> list[str]:
+        games_str = []
+        count = (page - 1) * 10
+        for game in games:
+            count += 1
+            games_str.append(
+                self.__get_game_answer(
+                    count=count,
+                    win="Победа\n" if game["win"] else "Поражение\n",
+                    hero=game["hero"],
+                    game_date=game['game_date'][:-1].replace("T", " "),
+                    game_duration=game["game_duration"][:-1],
+                    kda=game["KDA"]
+                )
+            )
+        return games_str
 
     @staticmethod
     async def start_retrieve_games(message: Message):
@@ -98,7 +119,7 @@ class RetrieveGamesScenario:
         data = await state.get_data()
 
         last_filter_by, last_filter_name = data["last_filter"]["filter_by"], \
-                                           data["last_filter"]["filter_name"]
+            data["last_filter"]["filter_name"]
 
         filter_value = [data["first_interval"], message.text] \
             if last_filter_by == "interval" else message.text
@@ -290,18 +311,7 @@ class RetrieveGamesScenario:
 
         match res_code:
             case 200:
-                answer = ""
-                count = 0
-                for game in json:
-                    count += 1
-                    answer += self.__get_game_answer(
-                        count=count,
-                        win="Победа\n" if game["win"] else "Поражение\n",
-                        hero=game["hero"],
-                        game_date=game['game_date'][:-1].replace("T", " "),
-                        game_duration=game["game_duration"][:-1],
-                        kda=game["KDA"]
-                    )
+                answer = self.__get_games_answer(games=json)
                 await bot.send_message(
                     chat_id=chat_id,
                     text=answer if answer

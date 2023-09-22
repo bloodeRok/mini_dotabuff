@@ -70,3 +70,22 @@ class RetrieveGamesKeyboards:
             )
         )
         return builder.as_markup()
+
+    # pagination
+    @staticmethod
+    def get_paginate_kb(
+            games: dict[int, list[dict[str, str | bool]]],
+            page: int
+    ):
+        builder = InlineKeyboardBuilder()
+        if page > 1:
+            builder.button(
+                text="Пред. стр",
+                callback_data="retrieve_games_pagination"
+            )
+        if page < list(games.keys())[-1]:
+            builder.button(
+                text="След. стр",
+                callback_data="retrieve_games_pagination"
+            )
+        builder.adjust(2)
