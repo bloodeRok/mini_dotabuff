@@ -14,11 +14,11 @@ async def set_commands(bot: Bot):
         ),
         BotCommand(
             command="bind",
-            description="Привязать чат к нику в доте"
+            description="Привязаться к аккаунту в доте"
         ),
         BotCommand(
             command="get_stats",
-            description="Получить статистику"
+            description="Получить краткую статистику"
         ),
         BotCommand(
             command="add_games",
@@ -27,10 +27,6 @@ async def set_commands(bot: Bot):
         BotCommand(
             command="synchronise",
             description="Синхронизировать игры"
-        ),
-        BotCommand(
-            command="photo",
-            description="Прислать фото"
         ),
         BotCommand(
             command="retrieve_games",
