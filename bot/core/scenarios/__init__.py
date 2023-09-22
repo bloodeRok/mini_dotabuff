@@ -1,1 +1,2 @@
 from .retrieve_games_scenario import RetrieveGamesScenario
+from .welcome_scenario import WelcomeScenario

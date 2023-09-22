@@ -7,9 +7,8 @@ from core.models import User, Hero
 
 
 class UserSerializer(serializers.ModelSerializer):
-    matches_recorded = serializers.IntegerField(
-        help_text="Number of recorded matches.",
-        source="games.count"
+    matches_recorded = serializers.SerializerMethodField(
+        help_text="Number of recorded matches."
     )
     win_rate = serializers.SerializerMethodField(
         help_text="User's win rate."
@@ -28,8 +27,12 @@ class UserSerializer(serializers.ModelSerializer):
     )
 
     @staticmethod
+    def get_matches_recorded(user: User):
+        return user.game_stats.filter(marked=True).count()
+
+    @staticmethod
     def get_win_rate(user: User) -> Optional[str]:
-        all_stats = user.game_stats.all()
+        all_stats = user.game_stats.filter(marked=True)
         try:
             wr = all_stats.filter(win=True).count() / all_stats.count()
             return str(round(wr * 100, 1)) + " %"
@@ -38,8 +41,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_favorite_hero(user: User) -> Optional[str]:
-        if user.game_stats.count() > 0:
-            hero_id = user.game_stats. \
+        if user.game_stats.filter(marked=True).count() > 0:
+            hero_id = user.game_stats.filter(marked=True). \
                 values("hero").annotate(total=Count('id')). \
                 order_by("-total").first()["hero"]
             return Hero.objects.get(id=hero_id).name
@@ -47,21 +50,24 @@ class UserSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_avg_gpm(user: User) -> Optional[int]:
-        if user.game_stats.count() > 0:
+        if user.game_stats.filter(marked=True).count() > 0:
             return int(user.game_stats.aggregate(avg=Avg("gpm"))["avg"])
         return None
 
     @staticmethod
     def get_avg_xpm(user: User) -> Optional[int]:
-        if user.game_stats.count() > 0:
+        if user.game_stats.filter(marked=True).count() > 0:
             return int(user.game_stats.aggregate(avg=Avg("xpm"))["avg"])
         return None
 
     @staticmethod
     def get_avg_kda(user: User) -> Optional[int]:
-        kills = user.game_stats.aggregate(sum=Avg("kills"))["sum"]
-        deaths = user.game_stats.aggregate(sum=Avg("deaths"))["sum"]
-        assists = user.game_stats.aggregate(sum=Avg("assists"))["sum"]
+        kills = user.game_stats.filter(marked=True). \
+            aggregate(sum=Avg("kills"))["sum"]
+        deaths = user.game_stats.filter(marked=True). \
+            aggregate(sum=Avg("deaths"))["sum"]
+        assists = user.game_stats.filter(marked=True). \
+            aggregate(sum=Avg("assists"))["sum"]
         result = []
         if kills:
             result.append(kills)

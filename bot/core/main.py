@@ -11,7 +11,7 @@ from bot.core.scenarios import (
     add_games_scenario,
     basic_scenario,
     sychronise_scenario,
-    retrieve_games_scenario, RetrieveGamesScenario
+    RetrieveGamesScenario, WelcomeScenario
 )
 from bot.core.utils.bot_init import bot
 from bot.core.utils.callback_data import RetrieveGames
@@ -19,7 +19,8 @@ from bot.core.utils.states import (
     BindUserStates,
     AddGameStates,
     BasicStates,
-    SynchroniseStates, RetrieveGamesStates,
+    SynchroniseStates,
+    RetrieveGamesStates,
 )
 
 
@@ -41,9 +42,13 @@ async def start():
 
     # Welcome scenario
     dp.message.register(
-        welcome_scenario.send_welcome,
+        WelcomeScenario.send_welcome,
         Command("start")
     ),
+    dp.message.register(
+        WelcomeScenario.send_help,
+        Command("help")
+    )
 
     # Binding scenario
     dp.message.register(
