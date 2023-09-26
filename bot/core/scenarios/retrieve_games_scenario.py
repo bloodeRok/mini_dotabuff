@@ -363,13 +363,26 @@ class RetrieveGamesScenario:
         data = await state.get_data()
         current_page = data["current_page"]
         games_dict = data["games_dict"]
+        last_page = data.get("last_page")
 
-        await bot.send_message(
-            chat_id=chat_id,
-            text=games_dict[current_page],
-            reply_markup=RetrieveGamesKeyboards.get_paginate_kb(
-                games=games_dict,
-                page=current_page
+        if last_page:
+            await last_page.edit_text(
+                text=games_dict[current_page],
+                reply_markup=RetrieveGamesKeyboards.get_paginate_kb(
+                    games=games_dict,
+                    page=current_page
+                )
+            )
+            return
+
+        await state.update_data(
+            last_page=await bot.send_message(
+                chat_id=chat_id,
+                text=games_dict[current_page],
+                reply_markup=RetrieveGamesKeyboards.get_paginate_kb(
+                    games=games_dict,
+                    page=current_page
+                )
             )
         )
 
