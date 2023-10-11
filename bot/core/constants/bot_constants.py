@@ -17,3 +17,4 @@ DOTA_CLIENT_WINDOW_PHOTO_PATH = os.path.join(
     "dota_client_window.jpg"
 )
 ADMIN_ACCOUNT = 190947906
+PAGE_GAME_COUNTS = 5

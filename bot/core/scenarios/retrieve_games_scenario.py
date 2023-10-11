@@ -4,6 +4,7 @@ from typing import Any
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
+from bot.core.constants.bot_constants import PAGE_GAME_COUNTS
 from bot.core.constants.messages import START_RETRIEVE_GAMES_MESSAGE
 from bot.core.keyboards import RetrieveGamesKeyboards, to_admin__kb
 from bot.core.repositories import UserRepository, HeroRepository
@@ -109,12 +110,15 @@ class RetrieveGamesScenario:
     ) -> dict[int, str]:
 
         games_dict = {}
-        for game_number in range(ceil(len(games) / 20)):
+        for game_number in range(ceil(len(games) / PAGE_GAME_COUNTS)):
             games_dict[game_number + 1] = \
-                games[game_number * 20: (game_number + 1) * 20]
+                games[
+                game_number * PAGE_GAME_COUNTS:
+                (game_number + 1) * PAGE_GAME_COUNTS
+                ]
         for page in games_dict:
             page_games = ""
-            count = (page - 1) * 20
+            count = (page - 1) * PAGE_GAME_COUNTS
             for game in games_dict[page]:
                 count += 1
                 page_games += self.__get_game_str(

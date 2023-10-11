@@ -78,11 +78,13 @@ class RetrieveGamesKeyboards:
             page: int
     ):
         builder = InlineKeyboardBuilder()
+
         if page > 1:
             builder.button(
                 text="Пред. стр",
                 callback_data="subtraction_page"
             )
+
         if page < list(games.keys())[-1]:
             builder.button(
                 text="След. стр",
@@ -92,5 +94,9 @@ class RetrieveGamesKeyboards:
             text="Я насмотрелся",
             callback_data="close_retrieving"
         )
-        builder.adjust(2, 1)
+        if len([button for button in builder.buttons]) == 3:
+            buttons = [2, 1]
+        else:
+            buttons = [1, 1] # TODO normal!!!!!
+        builder.adjust(*buttons)
         return builder.as_markup()
