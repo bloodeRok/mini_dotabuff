@@ -7,10 +7,11 @@ RUN apt-get update && apt-get -y install libpq-dev gcc dos2unix && apt-get clean
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY . .
+COPY ./backend ./backend
+COPY ./server ./server
 
-RUN dos2unix ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
-CMD ./entrypoint.sh
+RUN dos2unix ./entrypoint-backend.sh
+RUN chmod +x ./entrypoint-backend.sh
+CMD ./entrypoint-backend.sh
 
 EXPOSE 8000
