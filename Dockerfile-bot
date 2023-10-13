@@ -4,10 +4,12 @@ WORKDIR /bot
 
 RUN apt-get update && apt-get -y install libpq-dev gcc dos2unix && apt-get clean
 
-COPY . .
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-RUN dos2unix ./entrypoint-bot.sh
-RUN chmod +x ./entrypoint-bot.sh
-CMD ./entrypoint-bot.sh
+COPY ./bot ./bot
+COPY .env .
+
+CMD python -m bot.core.main
 
 EXPOSE 8001

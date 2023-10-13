@@ -8,6 +8,7 @@ FAKE_USER_AGENT = {
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.9; rv:45.0)"
         " Gecko/20100101 Firefox/45.0"
 }
+ADMIN_ACCOUNT = 190947906
 
 ADD_HEROES_MIGRATION_SQL = "INSERT INTO backend_hero (name, hero_id) VALUES " \
                            "('Anti-Mage', 1)," \

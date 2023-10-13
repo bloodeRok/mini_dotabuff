@@ -2,8 +2,8 @@ from typing import Any
 
 from django.db import IntegrityError
 
-from bot.core.constants.bot_constants import ADMIN_ACCOUNT
 from backend.app.api_exceptions.conflict import PlayerGameConflict
+from backend.constants.defaults import ADMIN_ACCOUNT
 from backend.models import PlayerStats, Game, User
 
 

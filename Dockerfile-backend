@@ -7,7 +7,11 @@ RUN apt-get update && apt-get -y install libpq-dev gcc dos2unix && apt-get clean
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY . /app --exclude=folder_to_exclude/
+COPY ./backend ./backend
+COPY ./server ./server
+COPY .env .
+COPY entrypoint-backend.sh .
+COPY manage.py .
 
 RUN dos2unix ./entrypoint-backend.sh
 RUN chmod +x ./entrypoint-backend.sh
