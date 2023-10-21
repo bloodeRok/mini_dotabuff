@@ -18,7 +18,7 @@ services:
       context: .
       dockerfile: Dockerfile-backend
     platform: linux/amd64
-    container_name: mini_dotabuff_django
+    container_name: minidotabuffdjango
     restart: unless-stopped
     depends_on:
       - mini_dotabuff_pgdb
@@ -40,8 +40,6 @@ services:
     tty: true
     env_file:
       - .env
-    ports:
-      - "1788:8001"
 
 volumes:
   mini-dotabuff-pgdata:

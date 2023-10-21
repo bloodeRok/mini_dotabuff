@@ -11,5 +11,3 @@ COPY ./bot ./bot
 COPY .env .
 
 CMD python -m bot.core.main
-
-EXPOSE 8001
