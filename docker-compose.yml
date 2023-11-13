@@ -27,6 +27,9 @@ services:
       - .env
     ports:
       - "1688:8000"
+    networks:
+      dotabuff_network:
+        ipv4_address: 172.18.0.22
 
   mini_dotabuff_bot:
     build:
@@ -40,6 +43,15 @@ services:
     tty: true
     env_file:
       - .env
+
+
+networks:
+  dotabuff_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.18.0.0/16
 
 volumes:
   mini-dotabuff-pgdata:

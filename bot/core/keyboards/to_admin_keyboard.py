@@ -9,6 +9,6 @@ to_admin__button = [
     ]
 ]
 
-to_admin__kb =  InlineKeyboardMarkup(
+to_admin__kb = InlineKeyboardMarkup(
     inline_keyboard=to_admin__button
 )
