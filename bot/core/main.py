@@ -5,13 +5,13 @@ from aiogram import F
 from aiogram.filters import Command
 
 from bot.core.scenarios import (
-    welcome_scenario,
     bind_chat_id_to_user_scenario,
     get_stats_scenario,
     add_games_scenario,
     basic_scenario,
     sychronise_scenario,
-    RetrieveGamesScenario, WelcomeScenario
+    RetrieveGamesScenario,
+    WelcomeScenario
 )
 from bot.core.utils.bot_init import bot
 from bot.core.utils.callback_data import RetrieveGames

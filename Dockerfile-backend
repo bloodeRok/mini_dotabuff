@@ -1,0 +1,20 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get -y install libpq-dev gcc dos2unix && apt-get clean
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY ./backend ./backend
+COPY ./server ./server
+COPY .env .
+COPY entrypoint-backend.sh .
+COPY manage.py .
+
+RUN dos2unix ./entrypoint-backend.sh
+RUN chmod +x ./entrypoint-backend.sh
+CMD ./entrypoint-backend.sh
+
+EXPOSE 8000

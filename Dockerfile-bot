@@ -1,0 +1,13 @@
+FROM python:3.10-slim
+
+WORKDIR /bot
+
+RUN apt-get update && apt-get -y install libpq-dev gcc dos2unix && apt-get clean
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY ./bot ./bot
+COPY .env .
+
+CMD python -m bot.core.main

@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "")
 
-DEBUG = os.environ.get("DEBUG", "0")
+DEBUG = os.environ.get("DEBUG", False)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    "core",
+    "backend",
     "rest_framework",
     "drf_spectacular"
 ]
@@ -120,8 +120,8 @@ DATABASES = {
         "NAME": os.environ.get("POSTGRES_DB", ""),
         "USER": os.environ.get("POSTGRES_USER", ""),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
-        "HOST": os.environ.get("POSTGRES_HOST", ""),
-        "PORT": os.environ.get("POSTGRES_PORT", ""),
+        "HOST": os.environ.get("DATABASE_HOST", ""),
+        "PORT": os.environ.get("DATABASE_PORT", ""),
     }
 }
 
