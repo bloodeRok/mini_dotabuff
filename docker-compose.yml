@@ -11,7 +11,9 @@ services:
       - "1588:5432"
     volumes:
       - mini-dotabuff-pgdata:/var/lib/postgresql/data
-
+    networks:
+      dotabuff_network:
+        ipv4_address: 172.18.0.20
 
   mini_dotabuff_django:
     build:
@@ -29,7 +31,7 @@ services:
       - "1688:8000"
     networks:
       dotabuff_network:
-        ipv4_address: 172.18.0.22
+        ipv4_address: 172.18.0.21
 
   mini_dotabuff_bot:
     build:
@@ -43,6 +45,9 @@ services:
     tty: true
     env_file:
       - .env
+    networks:
+      dotabuff_network:
+        ipv4_address: 172.18.0.22
 
 
 networks:

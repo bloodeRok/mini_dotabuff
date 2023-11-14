@@ -1,4 +1,4 @@
-CORE_URL = "http://172.18.0.3:8000"
+CORE_URL = "http://172.18.0.21:8000"
 
 BIND_USER_URL = CORE_URL + "/telegram-profiles/"
 ADD_GAMES_URL = CORE_URL + "/telegram-profiles/{chat_id}/games/"
